@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { BookOpen, Mic, Trophy, Sparkles, Play, Star, Calculator } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { getMathProgress, hasValidMathProgress, type MathProgress } from '@/lib/math-progress';
+import { getSpeakingProgress, hasValidSpeakingProgress, type SpeakingProgress } from '@/lib/speaking-progress';
+import { getVocabularyProgress, type VocabularyProgress } from '@/lib/vocabulary-progress';
 
 export default function Home() {
   const [greeting, setGreeting] = useState('');
@@ -21,6 +24,32 @@ export default function Home() {
     }
   }, []);
 
+  // 计算各模块进度
+  const mathProgress = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    if (!hasValidMathProgress()) return 0;
+    const progress = getMathProgress();
+    if (!progress || !progress.totalQuestions) return 0;
+    return Math.round((progress.currentQuestionIndex + 1) / progress.totalQuestions * 100);
+  }, []);
+
+  const speakingProgress = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    if (!hasValidSpeakingProgress()) return 0;
+    const progress = getSpeakingProgress();
+    if (!progress || !progress.totalExercises) return 0;
+    return Math.round((progress.currentIndex + 1) / progress.totalExercises * 100);
+  }, []);
+
+  const vocabularyProgress = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    const progress = getVocabularyProgress();
+    if (!progress) return 0;
+    const totalWords = Object.keys(progress).length;
+    const masteredWords = Object.values(progress).filter(p => p.status === 'mastered').length;
+    return totalWords > 0 ? Math.round(masteredWords / totalWords * 100) : 0;
+  }, []);
+
   const modules = [
     {
       title: '单词闯关',
@@ -29,7 +58,7 @@ export default function Home() {
       color: 'bg-blue-500',
       gradient: 'from-blue-400 to-blue-600',
       href: '/vocabulary',
-      progress: 0,
+      progress: vocabularyProgress,
     },
     {
       title: '数学练习',
@@ -38,6 +67,15 @@ export default function Home() {
       color: 'bg-green-500',
       gradient: 'from-green-400 to-green-600',
       href: '/math',
+      progress: mathProgress,
+    },
+    {
+      title: '古诗词',
+      description: '经典古诗词，与课本同步学习',
+      icon: BookOpen,
+      color: 'bg-purple-500',
+      gradient: 'from-purple-400 to-purple-600',
+      href: '/reading',
       progress: 0,
     },
     {
@@ -47,7 +85,7 @@ export default function Home() {
       color: 'bg-pink-500',
       gradient: 'from-pink-400 to-pink-600',
       href: '/speaking',
-      progress: 0,
+      progress: speakingProgress,
     },
     {
       title: '学习进度',
@@ -132,53 +170,6 @@ export default function Home() {
             </Link>
           );
         })}
-      </div>
-
-      {/* 古诗词专区 */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <BookOpen className="w-6 h-6 text-purple-500" />
-          古诗词专区
-        </h2>
-        <Link href="/reading">
-          <Card className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border-2 border-purple-300 dark:border-purple-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                  <div className="text-6xl">📜</div>
-                  <div>
-                    <h3 className="text-2xl font-bold mb-2 text-purple-700 dark:text-purple-300">
-                      语文古诗词
-                    </h3>
-                    <p className="text-base text-slate-600 dark:text-slate-400 mb-3">
-                      经典古诗词，与课本同步学习
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-                      <span className="flex items-center gap-1">
-                        📖 30首经典
-                      </span>
-                      <span className="flex items-center gap-1">
-                        🎓 年级同步
-                      </span>
-                      <span className="flex items-center gap-1">
-                        🎵 原文朗诵
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                  >
-                    <Play className="w-5 h-5 mr-2" />
-                    开始学习
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
 
       {/* 推荐内容 */}
