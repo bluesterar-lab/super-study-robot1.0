@@ -1,4 +1,4 @@
-type SpeakingPractice = {
+export type SpeakingPractice = {
   id: number;
   question: string;
   chinese: string;
