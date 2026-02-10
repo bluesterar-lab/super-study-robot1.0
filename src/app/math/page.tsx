@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Check, X, Star, RotateCcw, Calculator, BookOpen, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { 
+  ArrowLeft, Check, X, Star, RotateCcw, Calculator, 
+  BookOpen, Target, Save, Clock, PlayCircle, AlertCircle 
+} from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-import { allMathQuestions, grade3Questions, grade4Questions, grade5Questions, grade6Questions } from '@/lib/math-questions';
+import { allMathQuestions } from '@/lib/math-questions';
+import { 
+  saveMathProgress, 
+  getMathProgress, 
+  clearMathProgress,
+  hasValidMathProgress,
+  getMathProgressAge,
+  type MathProgress 
+} from '@/lib/math-progress';
 
 type MathProblem = {
   id: number;
@@ -69,15 +81,60 @@ export default function MathPage() {
   const [answered, setAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [savedProgress, setSavedProgress] = useState<MathProgress | null>(null);
 
+  // 检查是否有保存的进度
+  useEffect(() => {
+    if (hasValidMathProgress()) {
+      const progress = getMathProgress();
+      setSavedProgress(progress);
+    }
+  }, []);
+
+  // 计算过滤后的题目
   const filteredProblems = selectedGrade && selectedCategory
     ? getQuestionsByGradeAndCategory(selectedGrade, selectedCategory)
     : [];
+
+  // 自动保存进度
+  useEffect(() => {
+    if (selectedGrade && currentProblemIndex > 0 && filteredProblems.length > 0) {
+      const progress: MathProgress = {
+        grade: selectedGrade,
+        category: selectedCategory,
+        currentQuestionIndex: currentProblemIndex,
+        correctCount: score,
+        totalCount: currentProblemIndex + 1,
+        timestamp: Date.now(),
+        totalQuestions: filteredProblems.length
+      };
+      saveMathProgress(progress);
+    }
+  }, [currentProblemIndex, score, selectedGrade, selectedCategory, filteredProblems.length]);
 
   const currentProblem = filteredProblems[currentProblemIndex];
   const progress = filteredProblems.length > 0 
     ? ((currentProblemIndex + 1) / filteredProblems.length) * 100 
     : 0;
+
+  // 恢复进度
+  const handleResumeProgress = () => {
+    if (savedProgress) {
+      setSelectedGrade(savedProgress.grade);
+      setSelectedCategory(savedProgress.category);
+      setCurrentProblemIndex(savedProgress.currentQuestionIndex);
+      setScore(savedProgress.correctCount);
+      setSavedProgress(null);
+    }
+  };
+
+  // 清除保存的进度
+  const handleClearProgress = () => {
+    clearMathProgress();
+    setSavedProgress(null);
+    reset();
+  };
 
   const handleOptionClick = (optionIndex: number) => {
     if (answered || !currentProblem) return;
@@ -97,9 +154,13 @@ export default function MathPage() {
       setAnswered(false);
       setSelectedOption(null);
     } else {
-      alert(`🎉 恭喜完成练习！\n得分: ${score}/${filteredProblems.length}`);
-      reset();
+      handleComplete();
     }
+  };
+
+  const handleComplete = () => {
+    clearMathProgress();
+    setShowExitDialog(true);
   };
 
   const reset = () => {
@@ -118,6 +179,8 @@ export default function MathPage() {
     setStars(0);
     setAnswered(false);
     setSelectedOption(null);
+    clearMathProgress();
+    setShowExitDialog(false);
   };
 
   const getGradeColor = (grade: number) => {
@@ -137,22 +200,59 @@ export default function MathPage() {
         <div className="flex items-center gap-4 mb-6">
           <Link href="/">
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 w-5" />
             </Button>
           </Link>
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              数学学习
-            </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              选择年级和题目类型
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-500" />
-            <span className="font-bold text-lg">{stars}</span>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-bold">数学练习</h1>
         </div>
+
+        {/* 恢复进度卡片 */}
+        {savedProgress && (
+          <Card className="mb-6 border-2 border-primary bg-primary/5">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Clock className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">继续上次练习</h3>
+                    <p className="text-sm text-muted-foreground">
+                      保存于 {getMathProgressAge()}
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="outline">练习进度</Badge>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">年级:</span>
+                  <span className="font-medium">{savedProgress.grade}年级</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">进度:</span>
+                  <span className="font-medium">{savedProgress.currentQuestionIndex + 1} / {savedProgress.totalQuestions}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">正确:</span>
+                  <span className="font-medium">{savedProgress.correctCount} / {savedProgress.totalCount}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleResumeProgress} className="flex-1">
+                  <PlayCircle className="mr-2 h-4 w-4" />
+                  继续练习
+                </Button>
+                <Button variant="outline" onClick={handleClearProgress}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  重新开始
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* 年级选择 */}
         <Card className="mb-6 hover:shadow-xl transition-shadow">
@@ -167,7 +267,10 @@ export default function MathPage() {
                   key={grade}
                   variant={selectedGrade === grade ? "default" : "outline"}
                   size="lg"
-                  onClick={() => setSelectedGrade(grade)}
+                  onClick={() => {
+                    setSelectedGrade(grade);
+                    setSelectedCategory(null);
+                  }}
                   className={`text-lg font-semibold ${selectedGrade === grade ? 'bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}
                 >
                   {grade}年级
@@ -178,253 +281,242 @@ export default function MathPage() {
         </Card>
 
         {/* 题目类型选择 */}
-        <Card className="mb-6 hover:shadow-xl transition-shadow">
-          <CardContent className="p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Target className="w-6 h-6 text-purple-500" />
-              选择题目类型
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {categories.map((category) => (
-                <Card
-                  key={category.id}
-                  className={`cursor-pointer hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${
-                    selectedCategory === category.id
-                      ? 'border-blue-500 dark:border-blue-700'
-                      : 'border-transparent'
-                  }`}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className={`text-5xl mb-3`}>{category.icon}</div>
-                    <h4 className="text-xl font-bold mb-2">{category.name}</h4>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                      {category.description}
-                    </p>
-                    <Badge variant="outline" className="border-slate-300 dark:border-slate-700">
-                      {allMathQuestions.filter(p => p.category === category.id).length} 道题
-                    </Badge>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 开始按钮 */}
-        {selectedGrade && selectedCategory && (
-          <Card className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700">
-            <CardContent className="p-6 text-center">
-              <div className="mb-4 text-lg">
-                共 <span className="font-bold text-green-600">{getQuestionsByGradeAndCategory(selectedGrade, selectedCategory).length}</span> 道题
-              </div>
+        {selectedGrade && (
+          <Card className="mb-6 hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Target className="w-6 h-6 text-purple-500" />
+                选择题目类型
+              </h3>
               <Button
-                size="lg"
-                onClick={() => {
-                  setCurrentProblemIndex(0);
-                  setScore(0);
-                  setStars(0);
-                  setAnswered(false);
-                  setSelectedOption(null);
-                }}
-                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-lg px-12"
+                variant="outline"
+                size="sm"
+                className="mb-4"
+                onClick={() => setSelectedCategory(null)}
               >
-                <Calculator className="w-5 h-5 mr-2" />
-                开始练习
+                显示全部
               </Button>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {categories.map((category) => (
+                  <Card
+                    key={category.id}
+                    className={`cursor-pointer hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${
+                      selectedCategory === category.id
+                        ? 'border-blue-500 dark:border-blue-700'
+                        : 'border-transparent'
+                    }`}
+                    onClick={() => setSelectedCategory(category.id)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-5xl mb-3">{category.icon}</div>
+                      <h4 className="text-xl font-bold mb-2">{category.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {category.description}
+                      </p>
+                      <Badge className={`mt-3 bg-gradient-to-r ${category.color}`}>
+                        {getQuestionsByGradeAndCategory(selectedGrade, category.id).length} 题
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {selectedCategory && (
+                <Button 
+                  size="lg" 
+                  className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                  onClick={() => setCurrentProblemIndex(0)}
+                >
+                  开始练习
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
-
-        {/* 提示卡片 */}
-        <Card className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="text-4xl">💡</div>
-              <div>
-                <h3 className="font-semibold mb-2">学习小贴士</h3>
-                <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                  <li>• 选择你所在的年级</li>
-                  <li>• 选择想要练习的题目类型</li>
-                  <li>• 认真思考，仔细计算</li>
-                  <li>• 做错后查看解析，理解解题思路</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }
 
+  // 题目练习页面
   return (
-    <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
-      {/* 顶部导航 */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => {
-          setSelectedCategory(null);
-          setSelectedGrade(null);
-          setCurrentProblemIndex(0);
-        }}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            数学练习
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {currentProblemIndex + 1} / {filteredProblems.length}
-          </p>
+    <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => setShowExitDialog(true)}>
+            <ArrowLeft className="w-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold">数学练习</h1>
+            <div className="text-sm text-muted-foreground">
+              {selectedGrade}年级 · {selectedCategory || '全部'}
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Star className="w-5 h-5 text-yellow-500" />
-          <span className="font-bold text-lg">{stars}</span>
+          <Badge className={getGradeColor(selectedGrade || 3)}>
+            {selectedGrade}年级
+          </Badge>
+          <Badge variant="outline">
+            {score} / {filteredProblems.length}
+          </Badge>
         </div>
       </div>
 
-      {/* 进度条 */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            进度
-          </span>
-          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-            {Math.round(progress)}%
-          </span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
-
-      {/* 题目卡片 */}
-      <Card className="mb-6 hover:shadow-2xl transition-shadow">
-        <CardContent className="p-8">
-          {/* 年级和类型标签 */}
-          <div className="flex items-center gap-3 mb-6">
-            <Badge className={getGradeColor(currentProblem.grade)}>
-              {currentProblem.grade}年级
-            </Badge>
-            <Badge variant="outline">
-              {categories.find(c => c.id === currentProblem.category)?.name}
-            </Badge>
+      <Card className="w-full">
+        <CardContent className="p-6 space-y-6">
+          {/* 进度条 */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>进度</span>
+              <span>{currentProblemIndex + 1} / {filteredProblems.length}</span>
+            </div>
+            <Progress value={progress} className="h-2" />
           </div>
 
           {/* 题目 */}
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-              {currentProblem.question}
-            </h2>
-          </div>
+          <div className="text-center space-y-6 py-8">
+            <div className="space-y-2">
+              <div className="text-2xl md:text-3xl font-semibold mb-2">
+                第 {currentProblemIndex + 1} 题
+              </div>
+              <div className="text-4xl md:text-5xl font-bold text-primary">
+                {currentProblem.question}
+              </div>
+            </div>
 
-          {/* 选项 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {currentProblem.options.map((option, index) => {
-              const isSelected = selectedOption === index;
-              const isCorrect = index === currentProblem.correctAnswer;
-              
-              let bgColor = 'bg-white dark:bg-slate-800';
-              let borderColor = 'border-slate-200 dark:border-slate-700';
-              let textColor = 'text-slate-900 dark:text-white';
-              
-              if (answered) {
-                if (isCorrect) {
-                  bgColor = 'bg-green-100 dark:bg-green-900/30';
-                  borderColor = 'border-green-500 dark:border-green-700';
-                  textColor = 'text-green-700 dark:text-green-300';
-                } else if (isSelected) {
-                  bgColor = 'bg-red-100 dark:bg-red-900/30';
-                  borderColor = 'border-red-500 dark:border-red-700';
-                  textColor = 'text-red-700 dark:text-red-300';
+            {/* 选项 */}
+            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mt-8">
+              {currentProblem.options.map((option, index) => {
+                const isSelected = selectedOption === index;
+                const isCorrect = index === currentProblem.correctAnswer;
+                const showResult = answered;
+
+                let buttonClass = 'transition-all';
+                if (!showResult) {
+                  buttonClass = isSelected ? 'ring-2 ring-primary' : '';
+                } else if (isCorrect) {
+                  buttonClass = 'bg-green-100 dark:bg-green-900 border-green-500';
+                } else if (isSelected && !isCorrect) {
+                  buttonClass = 'bg-red-100 dark:bg-red-900 border-red-500';
                 }
-              } else if (isSelected) {
-                bgColor = 'bg-blue-100 dark:bg-blue-900/30';
-                borderColor = 'border-blue-500 dark:border-blue-700';
-                textColor = 'text-blue-700 dark:text-blue-300';
-              }
 
-              return (
-                <Button
-                  key={option}
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleOptionClick(index)}
-                  disabled={answered}
-                  className={`text-2xl font-semibold py-6 h-auto transition-all ${bgColor} ${borderColor} ${textColor} border-2`}
-                >
-                  <span className="mr-3 text-lg opacity-60">{String.fromCharCode(65 + index)}.</span>
-                  {option}
-                  {answered && isSelected && (
-                    isCorrect ? (
-                      <Check className="w-6 h-6 ml-2" />
-                    ) : (
-                      <X className="w-6 h-6 ml-2" />
-                    )
+                return (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className={`h-16 text-lg font-medium ${buttonClass}`}
+                    onClick={() => handleOptionClick(index)}
+                    disabled={answered}
+                  >
+                    <span className="mr-2">{['A', 'B', 'C', 'D'][index]}.</span>
+                    {option}
+                  </Button>
+                );
+              })}
+            </div>
+
+            {answered && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 text-xl font-semibold">
+                  {selectedOption === currentProblem.correctAnswer ? (
+                    <div className="text-green-600 flex items-center gap-2">
+                      <Check className="w-6 h-6" />
+                      回答正确！
+                    </div>
+                  ) : (
+                    <div className="text-red-600 flex items-center gap-2">
+                      <X className="w-6 h-6" />
+                      正确答案是：{['A', 'B', 'C', 'D'][currentProblem.correctAnswer]}
+                    </div>
                   )}
-                  {answered && isCorrect && !isSelected && (
-                    <Check className="w-6 h-6 ml-2 opacity-50" />
-                  )}
-                </Button>
-              );
-            })}
+                </div>
+
+                {/* 解析 */}
+                <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
+                  <div className="text-sm text-muted-foreground mb-2">解析：</div>
+                  <div className="text-base">{currentProblem.explanation}</div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* 解析 */}
-          {answered && (
-            <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-              <CardContent className="p-6">
-                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-blue-500" />
-                  解析
-                </h4>
-                <p className="text-slate-700 dark:text-slate-300">
-                  {currentProblem.explanation}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          {/* 按钮 */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={handleNext}
+              disabled={!answered}
+              size="lg"
+            >
+              {currentProblemIndex < filteredProblems.length - 1 ? '下一题' : '完成'}
+            </Button>
 
-          {/* 操作按钮 */}
-          {answered && (
-            <div className="mt-8 flex justify-center">
-              <Button
-                size="lg"
-                onClick={handleNext}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-              >
-                {currentProblemIndex < filteredProblems.length - 1 ? '下一题' : '查看结果'}
-              </Button>
+            <Button
+              variant="outline"
+              onClick={handleRestart}
+              size="lg"
+            >
+              重新开始
+            </Button>
+          </div>
+
+          {/* 星星显示 */}
+          {stars > 0 && (
+            <div className="flex items-center justify-center gap-1">
+              {Array.from({ length: stars }).map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* 得分卡片 */}
-      <Card className="bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 border-amber-300 dark:border-amber-700">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold mb-1">当前得分</h3>
-              <p className="text-sm text-amber-700 dark:text-amber-400">
-                {score}/{filteredProblems.length}
-              </p>
+      {/* 完成对话框 */}
+      <Dialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>🎉 练习完成！</DialogTitle>
+            <DialogDescription>
+              查看你的练习成绩
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="text-center">
+              <div className="text-5xl font-bold text-primary mb-2">
+                {score} / {filteredProblems.length}
+              </div>
+              <div className="text-muted-foreground">
+                正确率: {Math.round((score / filteredProblems.length) * 100)}%
+              </div>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                {Array.from({ length: stars }).map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
             </div>
-            <div className="text-4xl font-bold text-amber-800 dark:text-amber-300">
-              {filteredProblems.length > 0 ? Math.round((score / filteredProblems.length) * 100) : 0}%
-            </div>
+
+            {/* 保存提示 */}
+            {currentProblemIndex > 0 && (
+              <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg">
+                <Save className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="font-medium">练习进度已保存</div>
+                  <div className="text-sm text-muted-foreground">
+                    下次可以继续练习
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          {score > 0 && (
-            <div className="mt-4 flex justify-center">
-              <Button
-                variant="outline"
-                onClick={handleRestart}
-                className="border-amber-300 dark:border-amber-700"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                重新开始
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExitDialog(false)}>
+              关闭
+            </Button>
+            <Button onClick={handleRestart}>
+              重新开始
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

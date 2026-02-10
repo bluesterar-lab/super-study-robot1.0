@@ -41,15 +41,6 @@ export default function Home() {
       progress: 0,
     },
     {
-      title: '古诗词',
-      description: '经典古诗词，与课本同步学习',
-      icon: BookOpen,
-      color: 'bg-purple-500',
-      gradient: 'from-purple-400 to-purple-600',
-      href: '/reading',
-      progress: 0,
-    },
-    {
       title: '口语练习',
       description: 'AI 智能评测，提升口语表达能力',
       icon: Mic,
@@ -143,6 +134,53 @@ export default function Home() {
         })}
       </div>
 
+      {/* 古诗词专区 */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          <BookOpen className="w-6 h-6 text-purple-500" />
+          古诗词专区
+        </h2>
+        <Link href="/reading">
+          <Card className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border-2 border-purple-300 dark:border-purple-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="text-6xl">📜</div>
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2 text-purple-700 dark:text-purple-300">
+                      语文古诗词
+                    </h3>
+                    <p className="text-base text-slate-600 dark:text-slate-400 mb-3">
+                      经典古诗词，与课本同步学习
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                      <span className="flex items-center gap-1">
+                        📖 30首经典
+                      </span>
+                      <span className="flex items-center gap-1">
+                        🎓 年级同步
+                      </span>
+                      <span className="flex items-center gap-1">
+                        🎵 原文朗诵
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    开始学习
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
       {/* 推荐内容 */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
@@ -159,9 +197,9 @@ export default function Home() {
           </Card>
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardContent className="p-4">
-              <div className="text-4xl mb-2">🎨</div>
-              <h4 className="font-semibold mb-1">颜色主题绘本</h4>
-              <p className="text-sm text-slate-600 dark:text-slate-400">彩虹小熊的故事</p>
+              <div className="text-4xl mb-2">🧮</div>
+              <h4 className="font-semibold mb-1">数学计算练习</h4>
+              <p className="text-sm text-slate-600 dark:text-slate-400">加减乘除基础训练</p>
             </CardContent>
           </Card>
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
