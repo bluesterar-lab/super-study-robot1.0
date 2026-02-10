@@ -8,16 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
-import { allSpeaking, getSpeakingByGrade } from '@/lib/speaking-data';
-
-type PracticeItem = {
-  id: number;
-  text: string;
-  translation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: string;
-  grade: number;
-};
+import { allSpeaking, getSpeakingByGrade, type SpeakingPractice } from '@/lib/speaking-data';
 
 type Category = {
   id: string;
@@ -100,7 +91,7 @@ export default function SpeakingPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const filteredItems = selectedGrade && selectedCategory
-    ? getSpeakingByGrade(selectedGrade).filter(item => item.category === selectedCategory)
+    ? getSpeakingByGrade(selectedGrade).filter(item => item.topic === selectedCategory)
     : selectedGrade
     ? getSpeakingByGrade(selectedGrade)
     : [];
@@ -180,7 +171,7 @@ export default function SpeakingPage() {
 
       if (result.success) {
         const recognizedText = result.text.trim().toLowerCase();
-        const targetText = currentItem.text.trim().toLowerCase();
+        const targetText = currentItem.question.trim().toLowerCase();
         setRecordedText(recognizedText);
 
         // 简单的相似度计算
@@ -277,13 +268,10 @@ export default function SpeakingPage() {
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'hard': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
-    }
+  const getDifficultyColor = (difficulty: number) => {
+    if (difficulty <= 2) return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+    if (difficulty <= 4) return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+    return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
   };
 
   // 显示选择页面
@@ -347,7 +335,7 @@ export default function SpeakingPage() {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {categories.map((category) => {
-                  const itemCount = getSpeakingByGrade(selectedGrade).filter(item => item.category === category.id).length;
+                  const itemCount = getSpeakingByGrade(selectedGrade).filter(item => item.topic === category.id).length;
                   if (itemCount === 0) return null;
                   return (
                     <Card
@@ -383,7 +371,7 @@ export default function SpeakingPage() {
             <CardContent className="p-6 text-center">
               <div className="mb-4 text-lg">
                 共 <span className="font-bold text-green-600">
-                  {getSpeakingByGrade(selectedGrade).filter(item => item.category === selectedCategory).length}
+                  {getSpeakingByGrade(selectedGrade).filter(item => item.topic === selectedCategory).length}
                 </span> 个练习
               </div>
               <Button
@@ -450,30 +438,32 @@ export default function SpeakingPage() {
       <Card className="mb-6 hover:shadow-xl transition-shadow">
         <CardContent className="p-8">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <Badge className={getGradeColor(currentItem.grade)}>
-              {currentItem.grade}年级
-            </Badge>
+            {selectedGrade && (
+              <Badge className={getGradeColor(selectedGrade)}>
+                {selectedGrade}年级
+              </Badge>
+            )}
             <Badge className={getDifficultyColor(currentItem.difficulty)}>
-              {currentItem.difficulty}
+              {currentItem.difficulty === 1 ? '简单' : currentItem.difficulty === 2 ? '中等' : '困难'}
             </Badge>
             <Badge variant="outline">
-              {currentItem.category}
+              {currentItem.topic}
             </Badge>
           </div>
 
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              {currentItem.text}
+              {currentItem.question}
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400">
-              {currentItem.translation}
+              {currentItem.chinese}
             </p>
           </div>
 
           <div className="flex justify-center mb-8">
             <Button
               size="lg"
-              onClick={() => speakText(currentItem.text)}
+              onClick={() => speakText(currentItem.question)}
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
             >
               <Volume2 className="w-5 h-5 mr-2" />
