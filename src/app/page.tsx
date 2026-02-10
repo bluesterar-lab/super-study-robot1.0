@@ -41,8 +41,8 @@ export default function Home() {
       progress: 0,
     },
     {
-      title: '绘本阅读',
-      description: '精美绘本故事，培养英语阅读兴趣',
+      title: '古诗词',
+      description: '经典古诗词，与课本同步学习',
       icon: BookOpen,
       color: 'bg-purple-500',
       gradient: 'from-purple-400 to-purple-600',
