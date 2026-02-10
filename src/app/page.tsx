@@ -45,9 +45,14 @@ export default function Home() {
     if (typeof window === 'undefined') return 0;
     const progress = getVocabularyProgress();
     if (!progress) return 0;
-    const totalWords = Object.keys(progress).length;
-    const masteredWords = Object.values(progress).filter(p => p.status === 'mastered').length;
-    return totalWords > 0 ? Math.round(masteredWords / totalWords * 100) : 0;
+    try {
+      const values = Object.values(progress);
+      if (!values || values.length === 0) return 0;
+      const masteredWords = values.filter(p => p && p.status === 'mastered').length;
+      return Math.round(masteredWords / values.length * 100);
+    } catch {
+      return 0;
+    }
   }, []);
 
   const modules = [
