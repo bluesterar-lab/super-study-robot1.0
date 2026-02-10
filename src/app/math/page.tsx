@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 
+import { allMathQuestions, grade3Questions, grade4Questions, grade5Questions, grade6Questions } from '@/lib/math-questions';
+
 type MathProblem = {
   id: number;
   grade: number;
@@ -50,156 +52,14 @@ const categories: Category[] = [
   },
 ];
 
-const mathProblems: MathProblem[] = [
-  // 三年级题目
-  {
-    id: 1,
-    grade: 3,
-    category: 'calculation',
-    question: '25 + 37 = ?',
-    options: ['52', '62', '72', '82'],
-    correctAnswer: 1,
-    explanation: '25 + 37 = 62，个位5+7=12进1，十位2+3+1=6',
-  },
-  {
-    id: 2,
-    grade: 3,
-    category: 'calculation',
-    question: '9 × 8 = ?',
-    options: ['64', '72', '81', '63'],
-    correctAnswer: 1,
-    explanation: '9 × 8 = 72，九八七十二',
-  },
-  {
-    id: 3,
-    grade: 3,
-    category: 'application',
-    question: '小明有15个苹果，吃了3个，还剩多少个？',
-    options: ['12', '13', '18', '11'],
-    correctAnswer: 0,
-    explanation: '15 - 3 = 12个',
-  },
-  {
-    id: 4,
-    grade: 3,
-    category: 'geometry',
-    question: '一个正方形有几条边？',
-    options: ['3条', '4条', '5条', '6条'],
-    correctAnswer: 1,
-    explanation: '正方形有4条边，4个角',
-  },
-  // 四年级题目
-  {
-    id: 5,
-    grade: 4,
-    category: 'calculation',
-    question: '125 × 4 = ?',
-    options: ['400', '500', '450', '600'],
-    correctAnswer: 1,
-    explanation: '125 × 4 = 500，125可以拆成100+25，100×4=400，25×4=100，400+100=500',
-  },
-  {
-    id: 6,
-    grade: 4,
-    category: 'calculation',
-    question: '1000 - 356 = ?',
-    options: ['644', '654', '634', '624'],
-    correctAnswer: 0,
-    explanation: '1000 - 356 = 644',
-  },
-  {
-    id: 7,
-    grade: 4,
-    category: 'application',
-    question: '一本书有240页，小明每天看30页，几天能看完？',
-    options: ['6天', '7天', '8天', '9天'],
-    correctAnswer: 2,
-    explanation: '240 ÷ 30 = 8天',
-  },
-  {
-    id: 8,
-    grade: 4,
-    category: 'geometry',
-    question: '长方形的长是8cm，宽是5cm，周长是多少？',
-    options: ['26cm', '40cm', '13cm', '36cm'],
-    correctAnswer: 0,
-    explanation: '长方形周长 = (长 + 宽) × 2 = (8 + 5) × 2 = 26cm',
-  },
-  // 五年级题目
-  {
-    id: 9,
-    grade: 5,
-    category: 'calculation',
-    question: '0.5 + 0.3 = ?',
-    options: ['0.8', '0.2', '0.15', '0.7'],
-    correctAnswer: 0,
-    explanation: '0.5 + 0.3 = 0.8，小数加法，小数点对齐相加',
-  },
-  {
-    id: 10,
-    grade: 5,
-    category: 'calculation',
-    question: '1/2 + 1/4 = ?',
-    options: ['1/6', '2/6', '3/4', '2/4'],
-    correctAnswer: 2,
-    explanation: '1/2 + 1/4 = 2/4 + 1/4 = 3/4',
-  },
-  {
-    id: 11,
-    grade: 5,
-    category: 'application',
-    question: '一个西瓜重5千克，吃了3/5，吃了多少千克？',
-    options: ['2千克', '3千克', '4千克', '1千克'],
-    correctAnswer: 1,
-    explanation: '5 × 3/5 = 3千克',
-  },
-  {
-    id: 12,
-    grade: 5,
-    category: 'geometry',
-    question: '三角形的面积是底×高÷2，如果底是6cm，高是4cm，面积是多少？',
-    options: ['24cm²', '12cm²', '10cm²', '20cm²'],
-    correctAnswer: 1,
-    explanation: '6 × 4 ÷ 2 = 12cm²',
-  },
-  // 六年级题目
-  {
-    id: 13,
-    grade: 6,
-    category: 'calculation',
-    question: '50的20%是多少？',
-    options: ['10', '15', '20', '25'],
-    correctAnswer: 0,
-    explanation: '50 × 20% = 50 × 0.2 = 10',
-  },
-  {
-    id: 14,
-    grade: 6,
-    category: 'calculation',
-    question: '3 : 4 = ? : 8，问号处填几？',
-    options: ['5', '6', '7', '8'],
-    correctAnswer: 1,
-    explanation: '3/4 = x/8，x = 3/4 × 8 = 6',
-  },
-  {
-    id: 15,
-    grade: 6,
-    category: 'application',
-    question: '一件衣服原价200元，打8折后多少钱？',
-    options: ['160元', '180元', '140元', '120元'],
-    correctAnswer: 0,
-    explanation: '200 × 80% = 160元',
-  },
-  {
-    id: 16,
-    grade: 6,
-    category: 'geometry',
-    question: '圆的周长公式是？',
-    options: ['πr²', '2πr', 'πd', 'r²'],
-    correctAnswer: 1,
-    explanation: '圆的周长 = 2 × π × r = πd',
-  },
-];
+// 根据年级和题型筛选题目
+const getQuestionsByGradeAndCategory = (grade: number, category: string): MathProblem[] => {
+  const gradeQuestions = allMathQuestions.filter(q => q.grade === grade);
+  if (category === 'all') {
+    return gradeQuestions;
+  }
+  return gradeQuestions.filter(q => q.category === category);
+};
 
 export default function MathPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -210,11 +70,9 @@ export default function MathPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
 
-  const filteredProblems = mathProblems.filter((problem) => {
-    if (selectedCategory && problem.category !== selectedCategory) return false;
-    if (selectedGrade && problem.grade !== selectedGrade) return false;
-    return true;
-  });
+  const filteredProblems = selectedGrade && selectedCategory
+    ? getQuestionsByGradeAndCategory(selectedGrade, selectedCategory)
+    : [];
 
   const currentProblem = filteredProblems[currentProblemIndex];
   const progress = filteredProblems.length > 0 
@@ -344,7 +202,7 @@ export default function MathPage() {
                       {category.description}
                     </p>
                     <Badge variant="outline" className="border-slate-300 dark:border-slate-700">
-                      {mathProblems.filter(p => p.category === category.id).length} 道题
+                      {allMathQuestions.filter(p => p.category === category.id).length} 道题
                     </Badge>
                   </CardContent>
                 </Card>
@@ -357,9 +215,18 @@ export default function MathPage() {
         {selectedGrade && selectedCategory && (
           <Card className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700">
             <CardContent className="p-6 text-center">
+              <div className="mb-4 text-lg">
+                共 <span className="font-bold text-green-600">{getQuestionsByGradeAndCategory(selectedGrade, selectedCategory).length}</span> 道题
+              </div>
               <Button
                 size="lg"
-                onClick={() => {}}
+                onClick={() => {
+                  setCurrentProblemIndex(0);
+                  setScore(0);
+                  setStars(0);
+                  setAnswered(false);
+                  setSelectedOption(null);
+                }}
                 className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-lg px-12"
               >
                 <Calculator className="w-5 h-5 mr-2" />
