@@ -8,7 +8,10 @@
     "preinstall": "npx only-allow pnpm",
     "lint": "eslint",
     "start": "bash ./scripts/start.sh",
-    "ts-check": "tsc -p tsconfig.json"
+    "ts-check": "tsc -p tsconfig.json",
+    "electron:dev": "pnpm next dev & pnpm wait-on http://localhost:5000 && pnpm electron .",
+    "electron:build": "pnpm next build && pnpm electron-builder",
+    "electron:pack": "pnpm next build && pnpm electron-builder --dir"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.958.0",
@@ -74,13 +77,17 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "electron-is-dev": "^3.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "only-allow": "^1.2.2",
     "react-dev-inspector": "^2.0.1",
     "shadcn": "latest",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^8.0.1"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
@@ -89,6 +96,55 @@
   "pnpm": {
     "overrides": {
       "esbuild": "^0.25.12"
+    }
+  },
+  "main": "electron/main.js",
+  "build": {
+    "appId": "com.happy-learning.app",
+    "productName": "快乐学习平台",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "out/**/*",
+      "public/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "public/icon.icns",
+      "category": "public.app-category.education"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.png",
+      "category": "Education"
     }
   }
 }

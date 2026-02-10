@@ -13,7 +13,10 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    unoptimized: true, // Electron需要禁用图片优化
   },
+  output: 'export', // 静态导出用于Electron
+  distDir: 'out', // 输出到out目录
 };
 
 export default nextConfig;
