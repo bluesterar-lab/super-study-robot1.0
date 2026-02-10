@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
-import { allSpeakingItems, getSpeakingByGrade } from '@/lib/speaking-data';
+import { allSpeaking, getSpeakingByGrade } from '@/lib/speaking-data';
 
 type PracticeItem = {
   id: number;
