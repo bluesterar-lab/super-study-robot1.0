@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Mic, Trophy, User } from 'lucide-react';
+import { Home, BookOpen, Mic, Trophy, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', icon: Home, label: '首页' },
-  { href: '/vocabulary', icon: BookOpen, label: '单词学习' },
-  { href: '/reading', icon: BookOpen, label: '绘本阅读' },
+  { href: '/vocabulary', icon: BookOpen, label: '英语单词' },
+  { href: '/math', icon: Calculator, label: '数学练习' },
   { href: '/speaking', icon: Mic, label: '口语练习' },
   { href: '/progress', icon: Trophy, label: '学习进度' },
 ];

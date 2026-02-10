@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Mic, Trophy, Sparkles, Play, Star } from 'lucide-react';
+import { BookOpen, Mic, Trophy, Sparkles, Play, Star, Calculator } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -29,6 +29,15 @@ export default function Home() {
       color: 'bg-blue-500',
       gradient: 'from-blue-400 to-blue-600',
       href: '/vocabulary',
+      progress: 0,
+    },
+    {
+      title: '数学练习',
+      description: '按年级分类，系统学习数学知识',
+      icon: Calculator,
+      color: 'bg-green-500',
+      gradient: 'from-green-400 to-green-600',
+      href: '/math',
       progress: 0,
     },
     {

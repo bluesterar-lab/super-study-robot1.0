@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, Trophy, Clock, BookOpen, Mic, Target, TrendingUp, Award, Flame } from 'lucide-react';
+import { ArrowLeft, Trophy, Clock, BookOpen, Mic, Target, TrendingUp, Award, Flame, Calculator } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +16,9 @@ type ProgressData = {
   readingBooks: number;
   speakingPractice: number;
   speakingScore: number;
+  mathProblemsSolved: number;
+  mathProblemsTotal: number;
+  mathScore: number;
   currentStreak: number;
   weeklyGoal: number;
   weeklyProgress: number;
@@ -30,6 +33,9 @@ const progressData: ProgressData = {
   readingBooks: 0,
   speakingPractice: 0,
   speakingScore: 0,
+  mathProblemsSolved: 0,
+  mathProblemsTotal: 16,
+  mathScore: 0,
   currentStreak: 0,
   weeklyGoal: 150,
   weeklyProgress: 0,
@@ -76,13 +82,20 @@ const achievements = [
   },
   {
     id: 5,
+    title: '数学小能手',
+    description: '完成 10 道数学题',
+    icon: '🧮',
+    unlocked: false,
+  },
+  {
+    id: 6,
     title: '口语专家',
     description: '口语练习 20 次',
     icon: '🎤',
     unlocked: false,
   },
   {
-    id: 6,
+    id: 7,
     title: '满分王者',
     description: '获得一次满分',
     icon: '👑',
@@ -92,6 +105,7 @@ const achievements = [
 
 export default function ProgressPage() {
   const vocabularyProgress = (progressData.vocabularyLearned / progressData.vocabularyTotal) * 100;
+  const mathProgress = (progressData.mathProblemsSolved / progressData.mathProblemsTotal) * 100;
   const weeklyProgressPercent = (progressData.weeklyProgress / progressData.weeklyGoal) * 100;
 
   return (
@@ -228,6 +242,25 @@ export default function ProgressPage() {
               <Progress value={0} className="h-3" />
             </div>
 
+            {/* 数学练习 */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <Calculator className="w-5 h-5 text-green-500" />
+                  <span className="font-medium">数学练习</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {progressData.mathProblemsSolved}/{progressData.mathProblemsTotal}
+                  </span>
+                  <Badge variant="outline" className="border-green-300 dark:border-green-700">
+                    {Math.round(mathProgress)}%
+                  </Badge>
+                </div>
+              </div>
+              <Progress value={mathProgress} className="h-3" />
+            </div>
+
             {/* 口语练习 */}
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -343,11 +376,17 @@ export default function ProgressPage() {
           <p className="text-lg text-slate-700 dark:text-slate-300 mb-4">
             每天坚持学习，积累知识，你会发现自己的进步！
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Link href="/vocabulary">
               <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
                 <BookOpen className="w-4 h-4 mr-2" />
-                开始学习
+                英语单词
+              </Button>
+            </Link>
+            <Link href="/math">
+              <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+                <Calculator className="w-4 h-4 mr-2" />
+                数学练习
               </Button>
             </Link>
             <Link href="/reading">
