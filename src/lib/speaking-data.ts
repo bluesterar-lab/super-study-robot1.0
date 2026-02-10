@@ -1,1224 +1,1873 @@
-type PracticeItem = {
+type SpeakingPractice = {
   id: number;
-  text: string;
-  translation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: string;
-  grade: number;
+  question: string;
+  chinese: string;
+  difficulty: number;
+  topic: string;
+  keyPhrases: string[];
 };
 
-// 三年级口语练习（30个）
-export const grade3Speaking: PracticeItem[] = [
-  // 日常问候
+// 三年级口语（基础对话 - 50个）
+export const grade3Speaking: SpeakingPractice[] = [
+  // 日常问候（10个）
   {
     id: 301,
-    text: 'Hello, how are you?',
-    translation: '你好，你好吗？',
-    difficulty: 'easy',
-    category: '日常问候',
-    grade: 3,
+    question: 'Hello, how are you today?',
+    chinese: '你好，你好吗？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['hello', 'how are you', 'today']
   },
   {
     id: 302,
-    text: 'Good morning!',
-    translation: '早上好！',
-    difficulty: 'easy',
-    category: '日常问候',
-    grade: 3,
+    question: 'Good morning! Did you sleep well?',
+    chinese: '早上好！你睡得好吗？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['good morning', 'sleep well']
   },
   {
     id: 303,
-    text: 'Good afternoon!',
-    translation: '下午好！',
-    difficulty: 'easy',
-    category: '日常问候',
-    grade: 3,
+    question: 'Good afternoon! What are you doing?',
+    chinese: '下午好！你在做什么？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['good afternoon', 'what are you doing']
   },
   {
     id: 304,
-    text: 'Good evening!',
-    translation: '晚上好！',
-    difficulty: 'easy',
-    category: '日常问候',
-    grade: 3,
+    question: 'Good evening! Are you hungry?',
+    chinese: '晚上好！你饿了吗？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['good evening', 'hungry']
   },
   {
     id: 305,
-    text: 'Good night!',
-    translation: '晚安！',
-    difficulty: 'easy',
-    category: '日常问候',
-    grade: 3,
+    question: 'Good night! See you tomorrow.',
+    chinese: '晚安！明天见。',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['good night', 'see you tomorrow']
   },
-  // 自我介绍
   {
     id: 306,
-    text: 'My name is Tom.',
-    translation: '我叫汤姆。',
-    difficulty: 'easy',
-    category: '自我介绍',
-    grade: 3,
+    question: 'Nice to meet you!',
+    chinese: '很高兴见到你！',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['nice to meet you']
   },
   {
     id: 307,
-    text: 'I am eight years old.',
-    translation: '我八岁了。',
-    difficulty: 'easy',
-    category: '自我介绍',
-    grade: 3,
+    question: 'What is your name?',
+    chinese: '你叫什么名字？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['what is your name']
   },
   {
     id: 308,
-    text: 'I live in Beijing.',
-    translation: '我住在北京。',
-    difficulty: 'easy',
-    category: '自我介绍',
-    grade: 3,
+    question: 'How old are you?',
+    chinese: '你多大了？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['how old are you']
   },
   {
     id: 309,
-    text: 'I like apples.',
-    translation: '我喜欢苹果。',
-    difficulty: 'easy',
-    category: '自我介绍',
-    grade: 3,
+    question: 'Where are you from?',
+    chinese: '你来自哪里？',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['where are you from']
   },
   {
     id: 310,
-    text: 'I am a student.',
-    translation: '我是一个学生。',
-    difficulty: 'easy',
-    category: '自我介绍',
-    grade: 3,
+    question: 'Have a nice day!',
+    chinese: '祝你度过美好的一天！',
+    difficulty: 3,
+    topic: '日常问候',
+    keyPhrases: ['have a nice day']
   },
-  // 简单问题
+
+  // 自我介绍（10个）
   {
     id: 311,
-    text: 'What is your name?',
-    translation: '你叫什么名字？',
-    difficulty: 'medium',
-    category: '简单问题',
-    grade: 3,
+    question: 'My name is Tom. I am nine years old.',
+    chinese: '我叫汤姆，我九岁了。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['my name is', 'years old']
   },
   {
     id: 312,
-    text: 'How old are you?',
-    translation: '你多大了？',
-    difficulty: 'medium',
-    category: '简单问题',
-    grade: 3,
+    question: 'I am a student in Grade 3.',
+    chinese: '我是一名三年级学生。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['I am a student', 'Grade 3']
   },
   {
     id: 313,
-    text: 'Where do you live?',
-    translation: '你住在哪里？',
-    difficulty: 'medium',
-    category: '简单问题',
-    grade: 3,
+    question: 'I like reading books very much.',
+    chinese: '我非常喜欢读书。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['I like', 'reading books']
   },
   {
     id: 314,
-    text: 'What color do you like?',
-    translation: '你喜欢什么颜色？',
-    difficulty: 'medium',
-    category: '简单问题',
-    grade: 3,
+    question: 'My favorite color is blue.',
+    chinese: '我最喜欢的颜色是蓝色。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['favorite color', 'blue']
   },
   {
     id: 315,
-    text: 'What is this?',
-    translation: '这是什么？',
-    difficulty: 'easy',
-    category: '简单问题',
-    grade: 3,
+    question: 'I have a happy family.',
+    chinese: '我有一个快乐的家庭。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['happy family']
   },
-  // 简单表达
   {
     id: 316,
-    text: 'Thank you very much.',
-    translation: '非常感谢。',
-    difficulty: 'easy',
-    category: '简单表达',
-    grade: 3,
+    question: 'I live in a small city.',
+    chinese: '我住在一个小城市。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['I live in', 'city']
   },
   {
     id: 317,
-    text: 'You are welcome.',
-    translation: '不客气。',
-    difficulty: 'easy',
-    category: '简单表达',
-    grade: 3,
+    question: 'I want to be a teacher when I grow up.',
+    chinese: '长大后我想当老师。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['want to be', 'teacher', 'grow up']
   },
   {
     id: 318,
-    text: 'I am sorry.',
-    translation: '对不起。',
-    difficulty: 'easy',
-    category: '简单表达',
-    grade: 3,
+    question: 'I have a brother and a sister.',
+    chinese: '我有一个哥哥和一个妹妹。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['have', 'brother', 'sister']
   },
   {
     id: 319,
-    text: 'That is okay.',
-    translation: '没关系。',
-    difficulty: 'easy',
-    category: '简单表达',
-    grade: 3,
+    question: 'I go to school by bus.',
+    chinese: '我坐公交车去上学。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['go to school', 'by bus']
   },
   {
     id: 320,
-    text: 'Nice to meet you.',
-    translation: '很高兴见到你。',
-    difficulty: 'medium',
-    category: '简单表达',
-    grade: 3,
+    question: 'I can play the piano.',
+    chinese: '我会弹钢琴。',
+    difficulty: 3,
+    topic: '自我介绍',
+    keyPhrases: ['can play', 'piano']
   },
-  // 日常活动
+
+  // 家庭（10个）
   {
     id: 321,
-    text: 'I go to school by bus.',
-    translation: '我坐公交车去上学。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'This is my father. He is tall.',
+    chinese: '这是我的父亲，他很高。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['this is', 'father', 'tall']
   },
   {
     id: 322,
-    text: 'I eat breakfast at seven.',
-    translation: '我七点吃早餐。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My mother is a doctor.',
+    chinese: '我妈妈是一名医生。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['mother', 'doctor']
   },
   {
     id: 323,
-    text: 'I watch TV in the evening.',
-    translation: '我晚上看电视。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'I love my family very much.',
+    chinese: '我非常爱我的家人。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['love my family', 'very much']
   },
   {
     id: 324,
-    text: 'I play football with my friends.',
-    translation: '我和朋友踢足球。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My sister helps me with homework.',
+    chinese: '我姐姐帮我做作业。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['sister', 'help', 'homework']
   },
   {
     id: 325,
-    text: 'I do my homework after school.',
-    translation: '放学后我做作业。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'We have dinner together every evening.',
+    chinese: '我们每天晚上一起吃晚餐。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['dinner together', 'every evening']
   },
   {
     id: 326,
-    text: 'I go to bed at nine.',
-    translation: '我九点睡觉。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My grandmother tells us stories.',
+    chinese: '我奶奶给我们讲故事。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['grandmother', 'tells stories']
   },
   {
     id: 327,
-    text: 'I read books on Sunday.',
-    translation: '我周日读书。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My father works in a bank.',
+    chinese: '我爸爸在银行工作。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['father', 'works in', 'bank']
   },
   {
     id: 328,
-    text: 'I help my mother at home.',
-    translation: '我在家帮妈妈。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My family has three members.',
+    chinese: '我家有三口人。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['family', 'three members']
   },
   {
     id: 329,
-    text: 'I have lunch at school.',
-    translation: '我在学校吃午餐。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'We visit our grandparents on Sunday.',
+    chinese: '我们周日去看望祖父母。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['visit', 'grandparents', 'Sunday']
   },
   {
     id: 330,
-    text: 'I like swimming very much.',
-    translation: '我非常喜欢游泳。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 3,
+    question: 'My parents love me very much.',
+    chinese: '我的父母非常爱我。',
+    difficulty: 3,
+    topic: '家庭',
+    keyPhrases: ['parents', 'love me']
+  },
+
+  // 学校生活（10个）
+  {
+    id: 331,
+    question: 'I study English and Math at school.',
+    chinese: '我在学校学习英语和数学。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['study', 'English', 'Math']
+  },
+  {
+    id: 332,
+    question: 'Our teacher is very kind.',
+    chinese: '我们的老师很和蔼。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['teacher', 'kind']
+  },
+  {
+    id: 333,
+    question: 'We play games during break time.',
+    chinese: '课间休息时我们玩游戏。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['play games', 'break time']
+  },
+  {
+    id: 334,
+    question: 'School starts at eight o\'clock.',
+    chinese: '学校八点开始上课。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['school starts', 'eight o\'clock']
+  },
+  {
+    id: 335,
+    question: 'I have many friends at school.',
+    chinese: '我在学校有很多朋友。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['many friends', 'at school']
+  },
+  {
+    id: 336,
+    question: 'We read books in the library.',
+    chinese: '我们在图书馆读书。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['read books', 'library']
+  },
+  {
+    id: 337,
+    question: 'I eat lunch in the classroom.',
+    chinese: '我在教室吃午餐。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['eat lunch', 'classroom']
+  },
+  {
+    id: 338,
+    question: 'We learn new words every day.',
+    chinese: '我们每天学习新单词。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['learn', 'new words', 'every day']
+  },
+  {
+    id: 339,
+    question: 'Our school has a big playground.',
+    chinese: '我们学校有个大操场。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['school', 'big playground']
+  },
+  {
+    id: 340,
+    question: 'I do my homework after school.',
+    chinese: '放学后我做作业。',
+    difficulty: 3,
+    topic: '学校生活',
+    keyPhrases: ['do homework', 'after school']
+  },
+
+  // 兴趣爱好（10个）
+  {
+    id: 341,
+    question: 'I like playing football.',
+    chinese: '我喜欢踢足球。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['like playing', 'football']
+  },
+  {
+    id: 342,
+    question: 'My hobby is drawing pictures.',
+    chinese: '我的爱好是画画。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['hobby', 'drawing pictures']
+  },
+  {
+    id: 343,
+    question: 'I enjoy listening to music.',
+    chinese: '我喜欢听音乐。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['enjoy', 'listening to music']
+  },
+  {
+    id: 344,
+    question: 'Can you swim?',
+    chinese: '你会游泳吗？',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['can you', 'swim']
+  },
+  {
+    id: 345,
+    question: 'I ride my bike on weekends.',
+    chinese: '我周末骑自行车。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['ride', 'bike', 'weekends']
+  },
+  {
+    id: 346,
+    question: 'We play games together.',
+    chinese: '我们一起玩游戏。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['play games', 'together']
+  },
+  {
+    id: 347,
+    question: 'I watch cartoons on TV.',
+    chinese: '我在电视上看动画片。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['watch cartoons', 'TV']
+  },
+  {
+    id: 348,
+    question: 'My favorite sport is basketball.',
+    chinese: '我最喜欢的运动是篮球。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['favorite sport', 'basketball']
+  },
+  {
+    id: 349,
+    question: 'I like singing and dancing.',
+    chinese: '我喜欢唱歌和跳舞。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['singing', 'dancing']
+  },
+  {
+    id: 350,
+    question: 'Reading is my favorite activity.',
+    chinese: '阅读是我最喜欢的活动。',
+    difficulty: 3,
+    topic: '兴趣爱好',
+    keyPhrases: ['reading', 'favorite activity']
   },
 ];
 
-// 四年级口语练习（35个）
-export const grade4Speaking: PracticeItem[] = [
-  // 日常对话
+// 四年级口语（进阶对话 - 55个）
+export const grade4Speaking: SpeakingPractice[] = [
+  // 日常交流（12个）
   {
     id: 401,
-    text: 'How are you doing today?',
-    translation: '你今天怎么样？',
-    difficulty: 'medium',
-    category: '日常对话',
-    grade: 4,
+    question: 'What did you do yesterday?',
+    chinese: '你昨天做什么了？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['what did you do', 'yesterday']
   },
   {
     id: 402,
-    text: 'I am fine, thank you.',
-    translation: '我很好，谢谢。',
-    difficulty: 'medium',
-    category: '日常对话',
-    grade: 4,
+    question: 'What are you going to do tomorrow?',
+    chinese: '你明天打算做什么？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['what are you going to do', 'tomorrow']
   },
   {
     id: 403,
-    text: 'See you tomorrow.',
-    translation: '明天见。',
-    difficulty: 'easy',
-    category: '日常对话',
-    grade: 4,
+    question: 'Where did you go last weekend?',
+    chinese: '你上周末去哪儿了？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['where did you go', 'last weekend']
   },
   {
     id: 404,
-    text: 'Have a nice day!',
-    translation: '祝你今天愉快！',
-    difficulty: 'easy',
-    category: '日常对话',
-    grade: 4,
+    question: 'How do you go to school every day?',
+    chinese: '你每天怎么去上学？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['how do you go to school', 'every day']
   },
   {
     id: 405,
-    text: 'How is the weather today?',
-    translation: '今天天气怎么样？',
-    difficulty: 'medium',
-    category: '日常对话',
-    grade: 4,
+    question: 'What time do you get up?',
+    chinese: '你几点起床？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['what time', 'get up']
   },
-  // 家庭介绍
   {
     id: 406,
-    text: 'I have a happy family.',
-    translation: '我有一个幸福的家庭。',
-    difficulty: 'medium',
-    category: '家庭介绍',
-    grade: 4,
+    question: 'When is your birthday?',
+    chinese: '你的生日是什么时候？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['when is your birthday']
   },
   {
     id: 407,
-    text: 'There are four people in my family.',
-    translation: '我家有四口人。',
-    difficulty: 'medium',
-    category: '家庭介绍',
-    grade: 4,
+    question: 'How many people are there in your family?',
+    chinese: '你家里有多少人？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['how many', 'people', 'family']
   },
   {
     id: 408,
-    text: 'My father is a doctor.',
-    translation: '我爸爸是医生。',
-    difficulty: 'medium',
-    category: '家庭介绍',
-    grade: 4,
+    question: 'What does your father do?',
+    chinese: '你爸爸是做什么的？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['what does', 'father do']
   },
   {
     id: 409,
-    text: 'My mother is a teacher.',
-    translation: '我妈妈是老师。',
-    difficulty: 'medium',
-    category: '家庭介绍',
-    grade: 4,
+    question: 'Where is your school?',
+    chinese: '你的学校在哪里？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['where is', 'your school']
   },
   {
     id: 410,
-    text: 'I love my family very much.',
-    translation: '我非常爱我的家人。',
-    difficulty: 'medium',
-    category: '家庭介绍',
-    grade: 4,
+    question: 'How often do you read books?',
+    chinese: '你多久读一次书？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['how often', 'read books']
   },
-  // 学校生活
   {
     id: 411,
-    text: 'What subjects do you like?',
-    translation: '你喜欢什么科目？',
-    difficulty: 'medium',
-    category: '学校生活',
-    grade: 4,
+    question: 'Why are you so happy today?',
+    chinese: '你今天为什么这么开心？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['why', 'so happy']
   },
   {
     id: 412,
-    text: 'I like English and Math.',
-    translation: '我喜欢英语和数学。',
-    difficulty: 'medium',
-    category: '学校生活',
-    grade: 4,
+    question: 'Which season do you like best?',
+    chinese: '你最喜欢哪个季节？',
+    difficulty: 4,
+    topic: '日常交流',
+    keyPhrases: ['which season', 'like best']
   },
+
+  // 学校话题（12个）
   {
     id: 413,
-    text: 'Our classroom is big and bright.',
-    translation: '我们的教室又大又明亮。',
-    difficulty: 'medium',
-    category: '学校生活',
-    grade: 4,
+    question: 'What is your favorite subject?',
+    chinese: '你最喜欢的科目是什么？',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['favorite subject']
   },
   {
     id: 414,
-    text: 'My favorite subject is music.',
-    translation: '我最喜欢的科目是音乐。',
-    difficulty: 'medium',
-    category: '学校生活',
-    grade: 4,
+    question: 'I like English because it is interesting.',
+    chinese: '我喜欢英语因为它很有趣。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['like', 'because', 'interesting']
   },
   {
     id: 415,
-    text: 'We have lunch at twelve.',
-    translation: '我们十二点吃午餐。',
-    difficulty: 'medium',
-    category: '学校生活',
-    grade: 4,
+    question: 'We have six classes every day.',
+    chinese: '我们每天上六节课。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['six classes', 'every day']
   },
-  // 爱好兴趣
   {
     id: 416,
-    text: 'What is your hobby?',
-    translation: '你的爱好是什么？',
-    difficulty: 'medium',
-    category: '爱好兴趣',
-    grade: 4,
+    question: 'Our classroom is on the third floor.',
+    chinese: '我们的教室在三层。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['classroom', 'third floor']
   },
   {
     id: 417,
-    text: 'My hobby is reading books.',
-    translation: '我的爱好是读书。',
-    difficulty: 'medium',
-    category: '爱好兴趣',
-    grade: 4,
+    question: 'I sit next to my best friend.',
+    chinese: '我坐在我最好的朋友旁边。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['sit next to', 'best friend']
   },
   {
     id: 418,
-    text: 'I like playing basketball.',
-    translation: '我喜欢打篮球。',
-    difficulty: 'medium',
-    category: '爱好兴趣',
-    grade: 4,
+    question: 'The teacher is very strict but kind.',
+    chinese: '老师很严格但很和蔼。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['strict but kind']
   },
   {
     id: 419,
-    text: 'I enjoy listening to music.',
-    translation: '我喜欢听音乐。',
-    difficulty: 'medium',
-    category: '爱好兴趣',
-    grade: 4,
+    question: 'We have PE class on Monday and Friday.',
+    chinese: '我们周一和周五有体育课。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['PE class', 'Monday', 'Friday']
   },
   {
     id: 420,
-    text: 'I like drawing pictures.',
-    translation: '我喜欢画画。',
-    difficulty: 'medium',
-    category: '爱好兴趣',
-    grade: 4,
+    question: 'I am good at mathematics.',
+    chinese: '我擅长数学。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['good at', 'mathematics']
   },
-  // 日常活动
   {
     id: 421,
-    text: 'I usually get up at six thirty.',
-    translation: '我通常六点半起床。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'We learn about plants in science class.',
+    chinese: '我们在科学课学习关于植物的知识。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['learn about', 'plants', 'science class']
   },
   {
     id: 422,
-    text: 'I brush my teeth every morning.',
-    translation: '我每天早上刷牙。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'School finishes at four o\'clock.',
+    chinese: '学校四点放学。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['school finishes', 'four o\'clock']
   },
   {
     id: 423,
-    text: 'I clean my room on weekends.',
-    translation: '我周末打扫房间。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'I borrow books from the school library.',
+    chinese: '我从学校图书馆借书。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['borrow books', 'library']
   },
   {
     id: 424,
-    text: 'I go shopping with my mother.',
-    translation: '我和妈妈去购物。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'We have a big sports meeting every year.',
+    chinese: '我们每年都有大型运动会。',
+    difficulty: 4,
+    topic: '学校话题',
+    keyPhrases: ['sports meeting', 'every year']
   },
+
+  // 日常生活（12个）
   {
     id: 425,
-    text: 'I play games with my friends.',
-    translation: '我和朋友玩游戏。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'What do you usually do on weekends?',
+    chinese: '你周末通常做什么？',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['usually do', 'weekends']
   },
   {
     id: 426,
-    text: 'I visit my grandparents on Sunday.',
-    translation: '我周日去看望祖父母。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'I help my mother with housework.',
+    chinese: '我帮妈妈做家务。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['help with', 'housework']
   },
   {
     id: 427,
-    text: 'I water the flowers every day.',
-    translation: '我每天浇花。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'We have dinner at seven o\'clock.',
+    chinese: '我们七点吃晚餐。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['dinner', 'seven o\'clock']
   },
   {
     id: 428,
-    text: 'I take a shower in the evening.',
-    translation: '我晚上洗澡。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'I go to bed at nine thirty.',
+    chinese: '我九点半上床睡觉。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['go to bed', 'nine thirty']
   },
   {
     id: 429,
-    text: 'I do exercise every morning.',
-    translation: '我每天早上锻炼。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'My mother cooks delicious food.',
+    chinese: '我妈妈做美味的食物。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['cooks', 'delicious food']
   },
   {
     id: 430,
-    text: 'I make my bed before breakfast.',
-    translation: '我早餐前整理床铺。',
-    difficulty: 'medium',
-    category: '日常活动',
-    grade: 4,
+    question: 'We watch TV after dinner.',
+    chinese: '晚餐后我们看电视。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['watch TV', 'after dinner']
   },
-  // 简单表达
   {
     id: 431,
-    text: 'Could you help me, please?',
-    translation: '请帮帮我好吗？',
-    difficulty: 'medium',
-    category: '礼貌表达',
-    grade: 4,
+    question: 'I wash my face and brush my teeth.',
+    chinese: '我洗脸刷牙。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['wash face', 'brush teeth']
   },
   {
     id: 432,
-    text: 'What time is it now?',
-    translation: '现在几点了？',
-    difficulty: 'easy',
-    category: '简单问题',
-    grade: 4,
+    question: 'My room is small but clean.',
+    chinese: '我的房间小但很干净。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['small but clean']
   },
   {
     id: 433,
-    text: 'Can I ask a question?',
-    translation: '我可以问个问题吗？',
-    difficulty: 'medium',
-    category: '礼貌表达',
-    grade: 4,
+    question: 'I clean my room on Saturday.',
+    chinese: '我周六打扫房间。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['clean my room', 'Saturday']
   },
   {
     id: 434,
-    text: 'May I come in?',
-    translation: '我可以进来吗？',
-    difficulty: 'medium',
-    category: '礼貌表达',
-    grade: 4,
+    question: 'We go shopping on Sundays.',
+    chinese: '我们周日去购物。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['go shopping', 'Sundays']
   },
   {
     id: 435,
-    text: 'Please wait a moment.',
-    translation: '请等一下。',
-    difficulty: 'easy',
-    category: '礼貌表达',
-    grade: 4,
+    question: 'I get up at six every morning.',
+    chinese: '我每天早上六点起床。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['get up', 'six', 'morning']
+  },
+  {
+    id: 436,
+    question: 'My father drives us to school.',
+    chinese: '我爸爸开车送我们去学校。',
+    difficulty: 4,
+    topic: '日常生活',
+    keyPhrases: ['drives us to school']
+  },
+
+  // 兴趣爱好（12个）
+  {
+    id: 437,
+    question: 'What is your hobby?',
+    chinese: '你的爱好是什么？',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['hobby']
+  },
+  {
+    id: 438,
+    question: 'I like collecting stamps.',
+    chinese: '我喜欢集邮。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['collecting stamps']
+  },
+  {
+    id: 439,
+    question: 'My hobby is taking photos.',
+    chinese: '我的爱好是拍照。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['taking photos']
+  },
+  {
+    id: 440,
+    question: 'We play chess together.',
+    chinese: '我们一起下棋。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['play chess', 'together']
+  },
+  {
+    id: 441,
+    question: 'I learn to play the guitar.',
+    chinese: '我学习弹吉他。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['learn to play', 'guitar']
+  },
+  {
+    id: 442,
+    question: 'She is good at dancing.',
+    chinese: '她擅长跳舞。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['good at', 'dancing']
+  },
+  {
+    id: 443,
+    question: 'I enjoy reading storybooks.',
+    chinese: '我喜欢读故事书。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['enjoy reading', 'storybooks']
+  },
+  {
+    id: 444,
+    question: 'We have fun at the park.',
+    chinese: '我们在公园玩得很开心。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['have fun', 'park']
+  },
+  {
+    id: 445,
+    question: 'I like to swim in summer.',
+    chinese: '我喜欢夏天游泳。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['swim', 'summer']
+  },
+  {
+    id: 446,
+    question: 'He runs fast in the race.',
+    chinese: '他在比赛中跑得很快。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['runs fast', 'race']
+  },
+  {
+    id: 447,
+    question: 'We like to sing songs.',
+    chinese: '我们喜欢唱歌。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['sing songs']
+  },
+  {
+    id: 448,
+    question: 'My brother likes playing basketball.',
+    chinese: '我哥哥喜欢打篮球。',
+    difficulty: 4,
+    topic: '兴趣爱好',
+    keyPhrases: ['likes playing', 'basketball']
+  },
+
+  // 季节与天气（7个）
+  {
+    id: 449,
+    question: 'Spring is warm and beautiful.',
+    chinese: '春天温暖而美丽。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['spring', 'warm', 'beautiful']
+  },
+  {
+    id: 450,
+    question: 'Summer is hot, but I can swim.',
+    chinese: '夏天很热，但我可以游泳。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['summer', 'hot', 'swim']
+  },
+  {
+    id: 451,
+    question: 'Autumn is cool and windy.',
+    chinese: '秋天凉爽多风。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['autumn', 'cool', 'windy']
+  },
+  {
+    id: 452,
+    question: 'Winter is cold and snowy.',
+    chinese: '冬天寒冷多雪。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['winter', 'cold', 'snowy']
+  },
+  {
+    id: 453,
+    question: 'It is raining today.',
+    chinese: '今天在下雨。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['raining', 'today']
+  },
+  {
+    id: 454,
+    question: 'The sun is shining bright.',
+    chinese: '太阳照耀得很亮。',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['sun', 'shining', 'bright']
+  },
+  {
+    id: 455,
+    question: 'What is the weather like?',
+    chinese: '天气怎么样？',
+    difficulty: 4,
+    topic: '季节与天气',
+    keyPhrases: ['what is the weather like']
   },
 ];
 
-// 五年级口语练习（40个）
-export const grade5Speaking: PracticeItem[] = [
-  // 日常对话
+// 五年级口语（中级对话 - 60个）
+export const grade5Speaking: SpeakingPractice[] = [
+  // 学习与成长（12个）
   {
     id: 501,
-    text: 'What did you do yesterday?',
-    translation: '你昨天做了什么？',
-    difficulty: 'medium',
-    category: '日常对话',
-    grade: 5,
+    question: 'How can I improve my English?',
+    chinese: '我怎样才能提高我的英语？',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['improve', 'English']
   },
   {
     id: 502,
-    text: 'I went to the park with my friends.',
-    translation: '我和朋友去公园了。',
-    difficulty: 'medium',
-    category: '日常对话',
-    grade: 5,
+    question: 'Practice makes perfect.',
+    chinese: '熟能生巧。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['practice', 'perfect']
   },
   {
     id: 503,
-    text: 'What are you going to do this weekend?',
-    translation: '这周末你打算做什么？',
-    difficulty: 'hard',
-    category: '日常对话',
-    grade: 5,
+    question: 'I study hard every day.',
+    chinese: '我每天努力学习。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['study hard', 'every day']
   },
   {
     id: 504,
-    text: 'I am going to visit my grandparents.',
-    translation: '我要去看望我的祖父母。',
-    difficulty: 'hard',
-    category: '日常对话',
-    grade: 5,
+    question: 'Reading helps me learn new words.',
+    chinese: '阅读帮助我学习新单词。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['reading', 'new words']
   },
   {
     id: 505,
-    text: 'Have you ever been to Shanghai?',
-    translation: '你去过上海吗？',
-    difficulty: 'hard',
-    category: '日常对话',
-    grade: 5,
+    question: 'I want to get good grades.',
+    chinese: '我想取得好成绩。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['get good grades']
   },
-  // 描述事物
   {
     id: 506,
-    text: 'The book is very interesting.',
-    translation: '这本书很有趣。',
-    difficulty: 'medium',
-    category: '描述事物',
-    grade: 5,
+    question: 'My teacher encourages me.',
+    chinese: '我的老师鼓励我。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['encourages', 'me']
   },
   {
     id: 507,
-    text: 'The movie was exciting.',
-    translation: '这部电影很精彩。',
-    difficulty: 'medium',
-    category: '描述事物',
-    grade: 5,
+    question: 'We learn by doing.',
+    chinese: '我们在实践中学习。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['learn by doing']
   },
   {
     id: 508,
-    text: 'The weather is getting warmer.',
-    translation: '天气越来越暖和了。',
-    difficulty: 'medium',
-    category: '描述事物',
-    grade: 5,
+    question: 'I prepare for the test.',
+    chinese: '我为考试做准备。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['prepare for', 'test']
   },
   {
     id: 509,
-    text: 'The city is beautiful and modern.',
-    translation: '这座城市美丽又现代。',
-    difficulty: 'medium',
-    category: '描述事物',
-    grade: 5,
+    question: 'Mistakes help us learn.',
+    chinese: '错误帮助我们学习。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['mistakes', 'learn']
   },
   {
     id: 510,
-    text: 'The food in this restaurant is delicious.',
-    translation: '这家餐厅的食物很好吃。',
-    difficulty: 'medium',
-    category: '描述事物',
-    grade: 5,
+    question: 'I listen carefully in class.',
+    chinese: '我在课堂上认真听讲。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['listen carefully', 'in class']
   },
-  // 表达观点
   {
     id: 511,
-    text: 'I think it is a good idea.',
-    translation: '我觉得这是个好主意。',
-    difficulty: 'medium',
-    category: '表达观点',
-    grade: 5,
+    question: 'We help each other with homework.',
+    chinese: '我们互相帮助做作业。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['help each other', 'homework']
   },
   {
     id: 512,
-    text: 'In my opinion, we should study hard.',
-    translation: '在我看来，我们应该努力学习。',
-    difficulty: 'hard',
-    category: '表达观点',
-    grade: 5,
+    question: 'Knowledge is power.',
+    chinese: '知识就是力量。',
+    difficulty: 5,
+    topic: '学习与成长',
+    keyPhrases: ['knowledge', 'power']
   },
+
+  // 旅行与出行（12个）
   {
     id: 513,
-    text: 'I agree with you.',
-    translation: '我同意你的看法。',
-    difficulty: 'medium',
-    category: '表达观点',
-    grade: 5,
+    question: 'Where would you like to travel?',
+    chinese: '你想去哪里旅行？',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['would like to travel']
   },
   {
     id: 514,
-    text: 'I disagree with your opinion.',
-    translation: '我不同意你的观点。',
-    difficulty: 'hard',
-    category: '表达观点',
-    grade: 5,
+    question: 'I want to visit Beijing.',
+    chinese: '我想去北京。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['want to visit', 'Beijing']
   },
   {
     id: 515,
-    text: 'I believe we can succeed.',
-    translation: '我相信我们能成功。',
-    difficulty: 'medium',
-    category: '表达观点',
-    grade: 5,
+    question: 'Traveling is fun and educational.',
+    chinese: '旅行既有趣又有教育意义。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['traveling', 'fun', 'educational']
   },
-  // 计划安排
   {
     id: 516,
-    text: 'What are your plans for the summer vacation?',
-    translation: '你暑假有什么计划？',
-    difficulty: 'hard',
-    category: '计划安排',
-    grade: 5,
+    question: 'We went on a trip last summer.',
+    chinese: '去年夏天我们去旅行了。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['went on a trip', 'last summer']
   },
   {
     id: 517,
-    text: 'I plan to learn swimming.',
-    translation: '我计划学游泳。',
-    difficulty: 'medium',
-    category: '计划安排',
-    grade: 5,
+    question: 'How do you go to work?',
+    chinese: '你怎么去上班？',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['how do you go to work']
   },
   {
     id: 518,
-    text: 'I will visit my uncle next week.',
-    translation: '我下周要去看望我的叔叔。',
-    difficulty: 'medium',
-    category: '计划安排',
-    grade: 5,
+    question: 'I travel by train.',
+    chinese: '我坐火车旅行。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['travel by train']
   },
   {
     id: 519,
-    text: 'We are going to have a party.',
-    translation: '我们要举办一个聚会。',
-    difficulty: 'medium',
-    category: '计划安排',
-    grade: 5,
+    question: 'We visited the museum.',
+    chinese: '我们参观了博物馆。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['visited', 'museum']
   },
   {
     id: 520,
-    text: 'I hope to travel to London.',
-    translation: '我希望去伦敦旅行。',
-    difficulty: 'hard',
-    category: '计划安排',
-    grade: 5,
+    question: 'The journey was wonderful.',
+    chinese: '这段旅程很精彩。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['journey', 'wonderful']
   },
-  // 经历描述
   {
     id: 521,
-    text: 'I had a great time at the party.',
-    translation: '我在聚会上玩得很开心。',
-    difficulty: 'medium',
-    category: '经历描述',
-    grade: 5,
+    question: 'I took many photos.',
+    chinese: '我拍了很多照片。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['took many photos']
   },
   {
     id: 522,
-    text: 'I felt very happy yesterday.',
-    translation: '昨天我感到很开心。',
-    difficulty: 'medium',
-    category: '经历描述',
-    grade: 5,
+    question: 'We stayed in a hotel.',
+    chinese: '我们住在酒店。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['stayed', 'hotel']
   },
   {
     id: 523,
-    text: 'I learned a lot from the trip.',
-    translation: '我从这次旅行中学到了很多。',
-    difficulty: 'medium',
-    category: '经历描述',
-    grade: 5,
+    question: 'I bought some souvenirs.',
+    chinese: '我买了一些纪念品。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['bought', 'souvenirs']
   },
   {
     id: 524,
-    text: 'It was an unforgettable experience.',
-    translation: '这是一次难忘的经历。',
-    difficulty: 'hard',
-    category: '经历描述',
-    grade: 5,
+    question: 'We came back yesterday.',
+    chinese: '我们昨天回来的。',
+    difficulty: 5,
+    topic: '旅行与出行',
+    keyPhrases: ['came back', 'yesterday']
   },
+
+  // 情绪与感受（12个）
   {
     id: 525,
-    text: 'I enjoyed the beautiful scenery.',
-    translation: '我欣赏了美丽的风景。',
-    difficulty: 'medium',
-    category: '经历描述',
-    grade: 5,
+    question: 'How do you feel today?',
+    chinese: '你今天感觉怎么样？',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['how do you feel']
   },
-  // 学习相关
   {
     id: 526,
-    text: 'How do you improve your English?',
-    translation: '你是如何提高英语的？',
-    difficulty: 'hard',
-    category: '学习相关',
-    grade: 5,
+    question: 'I feel very excited.',
+    chinese: '我感到很兴奋。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['feel', 'excited']
   },
   {
     id: 527,
-    text: 'I practice speaking English every day.',
-    translation: '我每天练习说英语。',
-    difficulty: 'medium',
-    category: '学习相关',
-    grade: 5,
+    question: 'I am nervous about the test.',
+    chinese: '我对考试感到紧张。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['nervous about', 'test']
   },
   {
     id: 528,
-    text: 'Reading helps me learn new words.',
-    translation: '阅读帮助我学习新单词。',
-    difficulty: 'medium',
-    category: '学习相关',
-    grade: 5,
+    question: 'He feels confident.',
+    chinese: '他感到自信。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['feels', 'confident']
   },
   {
     id: 529,
-    text: 'I listen to English songs to learn.',
-    translation: '我听英文歌来学习。',
-    difficulty: 'medium',
-    category: '学习相关',
-    grade: 5,
+    question: 'Why are you so worried?',
+    chinese: '你为什么这么担心？',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['so worried']
   },
   {
     id: 530,
-    text: 'I find English grammar a bit difficult.',
-    translation: '我觉得英语语法有点难。',
-    difficulty: 'hard',
-    category: '学习相关',
-    grade: 5,
+    question: 'She is sad today.',
+    chinese: '她今天很伤心。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['sad', 'today']
   },
-  // 情感表达
   {
     id: 531,
-    text: 'I am excited about the trip.',
-    translation: '我对这次旅行感到兴奋。',
-    difficulty: 'medium',
-    category: '情感表达',
-    grade: 5,
+    question: 'I feel tired after the game.',
+    chinese: '比赛后我感到累。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['feel tired', 'after the game']
   },
   {
     id: 532,
-    text: 'I feel a little nervous before the test.',
-    translation: '考试前我感到有点紧张。',
-    difficulty: 'medium',
-    category: '情感表达',
-    grade: 5,
+    question: 'We are proud of our school.',
+    chinese: '我们为我们的学校感到骄傲。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['proud of', 'school']
   },
   {
     id: 533,
-    text: 'I am proud of my achievements.',
-    translation: '我为我的成就感到骄傲。',
-    difficulty: 'medium',
-    category: '情感表达',
-    grade: 5,
+    question: 'I was surprised by the news.',
+    chinese: '我对这个消息感到惊讶。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['surprised by', 'news']
   },
   {
     id: 534,
-    text: 'I am worried about my grades.',
-    translation: '我担心我的成绩。',
-    difficulty: 'medium',
-    category: '情感表达',
-    grade: 5,
+    question: 'She feels happy about her grade.',
+    chinese: '她对她的成绩感到开心。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['feels happy about', 'grade']
   },
   {
     id: 535,
-    text: 'I feel confident about the future.',
-    translation: '我对未来充满信心。',
-    difficulty: 'medium',
-    category: '情感表达',
-    grade: 5,
+    question: 'I am bored on rainy days.',
+    chinese: '下雨天我感到无聊。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['bored', 'rainy days']
   },
-  // 建议请求
   {
     id: 536,
-    text: 'Can you give me some advice?',
-    translation: '你能给我一些建议吗？',
-    difficulty: 'medium',
-    category: '建议请求',
-    grade: 5,
+    question: 'He was scared of the dark.',
+    chinese: '他害怕黑暗。',
+    difficulty: 5,
+    topic: '情绪与感受',
+    keyPhrases: ['scared of', 'dark']
   },
+
+  // 社交与交流（12个）
   {
     id: 537,
-    text: 'I suggest you read more books.',
-    translation: '我建议你多读书。',
-    difficulty: 'medium',
-    category: '建议请求',
-    grade: 5,
+    question: 'Can you help me, please?',
+    chinese: '你能帮我吗？',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['can you help me', 'please']
   },
   {
     id: 538,
-    text: 'Would you like to join us?',
-    translation: '你想加入我们吗？',
-    difficulty: 'medium',
-    category: '建议请求',
-    grade: 5,
+    question: 'Would you like to join us?',
+    chinese: '你想加入我们吗？',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['would you like to join us']
   },
   {
     id: 539,
-    text: 'Let us work together.',
-    translation: '让我们一起工作吧。',
-    difficulty: 'medium',
-    category: '建议请求',
-    grade: 5,
+    question: 'I agree with you.',
+    chinese: '我同意你的看法。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['agree with you']
   },
   {
     id: 540,
-    text: 'I need your help.',
-    translation: '我需要你的帮助。',
-    difficulty: 'medium',
-    category: '建议请求',
-    grade: 5,
+    question: 'Sorry, I cannot help you.',
+    chinese: '抱歉，我不能帮你。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['sorry', 'cannot help you']
+  },
+  {
+    id: 541,
+    question: 'Thank you very much.',
+    chinese: '非常感谢。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['thank you very much']
+  },
+  {
+    id: 542,
+    question: 'You are welcome.',
+    chinese: '不客气。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['you are welcome']
+  },
+  {
+    id: 543,
+    question: 'Excuse me, where is the restroom?',
+    chinese: '请问，洗手间在哪里？',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['excuse me', 'restroom']
+  },
+  {
+    id: 544,
+    question: 'I am sorry for being late.',
+    chinese: '很抱歉我迟到了。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['sorry for being late']
+  },
+  {
+    id: 545,
+    question: 'Congratulations on your success!',
+    chinese: '祝贺你的成功！',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['congratulations', 'success']
+  },
+  {
+    id: 546,
+    question: 'I suggest we go by bus.',
+    chinese: '我建议我们坐公交去。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['suggest', 'go by bus']
+  },
+  {
+    id: 547,
+    question: 'Let us discuss the problem.',
+    chinese: '让我们讨论这个问题。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['let us discuss', 'problem']
+  },
+  {
+    id: 548,
+    question: 'Please give me some advice.',
+    chinese: '请给我一些建议。',
+    difficulty: 5,
+    topic: '社交与交流',
+    keyPhrases: ['give me', 'advice']
+  },
+
+  // 健康与生活（12个）
+  {
+    id: 549,
+    question: 'How do you stay healthy?',
+    chinese: '你如何保持健康？',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['stay healthy']
+  },
+  {
+    id: 550,
+    question: 'Exercise is good for your health.',
+    chinese: '锻炼对你的健康有好处。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['exercise', 'good for health']
+  },
+  {
+    id: 551,
+    question: 'I eat fruit every day.',
+    chinese: '我每天都吃水果。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['eat fruit', 'every day']
+  },
+  {
+    id: 552,
+    question: 'We should wash our hands often.',
+    chinese: '我们应该经常洗手。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['wash hands', 'often']
+  },
+  {
+    id: 553,
+    question: 'Get enough sleep at night.',
+    chinese: '晚上要获得足够的睡眠。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['enough sleep', 'at night']
+  },
+  {
+    id: 554,
+    question: 'Drink plenty of water.',
+    chinese: '多喝水。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['drink', 'plenty of water']
+  },
+  {
+    id: 555,
+    question: 'I feel sick today.',
+    chinese: '我今天感到不舒服。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['feel sick', 'today']
+  },
+  {
+    id: 556,
+    question: 'You should see a doctor.',
+    chinese: '你应该去看医生。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['should see a doctor']
+  },
+  {
+    id: 557,
+    question: 'Take care of yourself.',
+    chinese: '照顾好你自己。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['take care of yourself']
+  },
+  {
+    id: 558,
+    question: 'I have a headache.',
+    chinese: '我头痛。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['have a headache']
+  },
+  {
+    id: 559,
+    question: 'Rest well and get better soon.',
+    chinese: '好好休息，早日康复。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['rest well', 'get better']
+  },
+  {
+    id: 560,
+    question: 'Vegetables are good for you.',
+    chinese: '蔬菜对你有好处。',
+    difficulty: 5,
+    topic: '健康与生活',
+    keyPhrases: ['vegetables', 'good for you']
   },
 ];
 
-// 六年级口语练习（40个）
-export const grade6Speaking: PracticeItem[] = [
-  // 深度对话
+// 六年级口语（高级对话 - 60个）
+export const grade6Speaking: SpeakingPractice[] = [
+  // 学术与职业（12个）
   {
     id: 601,
-    text: 'What do you think about environmental protection?',
-    translation: '你对环境保护有什么看法？',
-    difficulty: 'hard',
-    category: '深度对话',
-    grade: 6,
+    question: 'What do you want to be in the future?',
+    chinese: '你未来想成为什么样的人？',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['want to be', 'in the future']
   },
   {
     id: 602,
-    text: 'I believe we should protect our planet.',
-    translation: '我相信我们应该保护我们的星球。',
-    difficulty: 'hard',
-    category: '深度对话',
-    grade: 6,
+    question: 'I want to be a scientist.',
+    chinese: '我想成为一名科学家。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['want to be', 'scientist']
   },
   {
     id: 603,
-    text: 'What is your opinion on technology?',
-    translation: '你对技术有什么看法？',
-    difficulty: 'hard',
-    category: '深度对话',
-    grade: 6,
+    question: 'What is your dream job?',
+    chinese: '你的梦想工作是什么？',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['dream job']
   },
   {
     id: 604,
-    text: 'Technology has changed our lives dramatically.',
-    translation: '技术彻底改变了我们的生活。',
-    difficulty: 'hard',
-    category: '深度对话',
-    grade: 6,
+    question: 'We need to study hard for our future.',
+    chinese: '我们需要为未来努力学习。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['study hard', 'for our future']
   },
   {
     id: 605,
-    text: 'How do you stay healthy?',
-    translation: '你是如何保持健康的？',
-    difficulty: 'medium',
-    category: '深度对话',
-    grade: 6,
+    question: 'I want to help people in need.',
+    chinese: '我想帮助需要帮助的人。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['help people', 'in need']
   },
-  // 复杂表达
   {
     id: 606,
-    text: 'The more you practice, the better you will become.',
-    translation: '你练习得越多，就会变得越好。',
-    difficulty: 'hard',
-    category: '复杂表达',
-    grade: 6,
+    question: 'What subjects are you good at?',
+    chinese: '你擅长哪些科目？',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['good at', 'subjects']
   },
   {
     id: 607,
-    text: 'It is important to balance study and rest.',
-    translation: '平衡学习和休息很重要。',
-    difficulty: 'hard',
-    category: '复杂表达',
-    grade: 6,
+    question: 'I am interested in technology.',
+    chinese: '我对科技感兴趣。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['interested in', 'technology']
   },
   {
     id: 608,
-    text: 'Never give up on your dreams.',
-    translation: '永远不要放弃你的梦想。',
-    difficulty: 'hard',
-    category: '复杂表达',
-    grade: 6,
+    question: 'Science helps us understand the world.',
+    chinese: '科学帮助我们理解世界。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['science', 'understand the world']
   },
   {
     id: 609,
-    text: 'Success comes from hard work and perseverance.',
-    translation: '成功来自努力工作和坚持不懈。',
-    difficulty: 'hard',
-    category: '复杂表达',
-    grade: 6,
+    question: 'We should protect our environment.',
+    chinese: '我们应该保护我们的环境。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['protect', 'environment']
   },
   {
     id: 610,
-    text: 'Learning is a lifelong journey.',
-    translation: '学习是一生的旅程。',
-    difficulty: 'hard',
-    category: '复杂表达',
-    grade: 6,
+    question: 'What is important for success?',
+    chinese: '成功最重要的是什么？',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['important for success']
   },
-  // 比较对比
   {
     id: 611,
-    text: 'What are the differences between cities and countryside?',
-    translation: '城市和乡村有什么不同？',
-    difficulty: 'hard',
-    category: '比较对比',
-    grade: 6,
+    question: 'Hard work and perseverance lead to success.',
+    chinese: '努力和坚持带来成功。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['hard work', 'perseverance', 'success']
   },
   {
     id: 612,
-    text: 'Cities are busier than the countryside.',
-    translation: '城市比乡村更繁忙。',
-    difficulty: 'medium',
-    category: '比较对比',
-    grade: 6,
+    question: 'We need to be responsible.',
+    chinese: '我们需要负责任。',
+    difficulty: 6,
+    topic: '学术与职业',
+    keyPhrases: ['need to be', 'responsible']
   },
+
+  // 社会与问题（12个）
   {
     id: 613,
-    text: 'Which do you prefer, tea or coffee?',
-    translation: '你更喜欢茶还是咖啡？',
-    difficulty: 'medium',
-    category: '比较对比',
-    grade: 6,
+    question: 'What can we do to protect the environment?',
+    chinese: '我们能做些什么来保护环境？',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['protect the environment']
   },
   {
     id: 614,
-    text: 'I prefer tea because it is healthy.',
-    translation: '我更喜欢茶，因为它很健康。',
-    difficulty: 'medium',
-    category: '比较对比',
-    grade: 6,
+    question: 'We should recycle paper and plastic.',
+    chinese: '我们应该回收纸张和塑料。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['recycle', 'paper', 'plastic']
   },
   {
     id: 615,
-    text: 'Both options have their advantages.',
-    translation: '两个选项各有优缺点。',
-    difficulty: 'hard',
-    category: '比较对比',
-    grade: 6,
+    question: 'Pollution is a serious problem.',
+    chinese: '污染是一个严重的问题。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['pollution', 'serious problem']
   },
-  // 原因结果
   {
     id: 616,
-    text: 'Why do you think learning English is important?',
-    translation: '你认为学习英语为什么重要？',
-    difficulty: 'hard',
-    category: '原因结果',
-    grade: 6,
+    question: 'Climate change affects us all.',
+    chinese: '气候变化影响我们所有人。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['climate change', 'affects']
   },
   {
     id: 617,
-    text: 'English helps us communicate with people around the world.',
-    translation: '英语帮助我们与世界各地的人交流。',
-    difficulty: 'hard',
-    category: '原因结果',
-    grade: 6,
+    question: 'We should save energy.',
+    chinese: '我们应该节约能源。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['save energy']
   },
   {
     id: 618,
-    text: 'Because of the rain, we stayed at home.',
-    translation: '因为下雨，我们待在家里。',
-    difficulty: 'medium',
-    category: '原因结果',
-    grade: 6,
+    question: 'Everyone can make a difference.',
+    chinese: '每个人都能带来改变。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['make a difference']
   },
   {
     id: 619,
-    text: 'As a result, we missed the train.',
-    translation: '结果，我们错过了火车。',
-    difficulty: 'medium',
-    category: '原因结果',
-    grade: 6,
+    question: 'We need to take care of nature.',
+    chinese: '我们需要照顾大自然。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['take care of nature']
   },
   {
     id: 620,
-    text: 'Due to the heavy traffic, we were late.',
-    translation: '由于交通拥堵，我们迟到了。',
-    difficulty: 'medium',
-    category: '原因结果',
-    grade: 6,
+    question: 'How can we help the poor?',
+    chinese: '我们如何帮助穷人？',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['help the poor']
   },
-  // 假设情景
   {
     id: 621,
-    text: 'What would you do if you had a million dollars?',
-    translation: '如果你有一百万美元，你会做什么？',
-    difficulty: 'hard',
-    category: '假设情景',
-    grade: 6,
+    question: 'Donation is a good way to help.',
+    chinese: '捐款是帮助的一种好方式。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['donation', 'help']
   },
   {
     id: 622,
-    text: 'If I had a million dollars, I would travel around the world.',
-    translation: '如果我有一百万美元，我会环游世界。',
-    difficulty: 'hard',
-    category: '假设情景',
-    grade: 6,
+    question: 'Education is important for everyone.',
+    chinese: '教育对每个人都很重要。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['education', 'important', 'everyone']
   },
   {
     id: 623,
-    text: 'If it rains tomorrow, we will stay at home.',
-    translation: '如果明天下雨，我们就待在家里。',
-    difficulty: 'medium',
-    category: '假设情景',
-    grade: 6,
+    question: 'We should respect others.',
+    chinese: '我们应该尊重他人。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['respect others']
   },
   {
     id: 624,
-    text: 'What would happen if everyone recycled?',
-    translation: '如果每个人都回收，会发生什么？',
-    difficulty: 'hard',
-    category: '假设情景',
-    grade: 6,
+    question: 'Equality and justice are important.',
+    chinese: '平等和正义很重要。',
+    difficulty: 6,
+    topic: '社会与问题',
+    keyPhrases: ['equality', 'justice', 'important']
   },
+
+  // 文化与艺术（12个）
   {
     id: 625,
-    text: 'The world would be much cleaner.',
-    translation: '世界会变得更干净。',
-    difficulty: 'medium',
-    category: '假设情景',
-    grade: 6,
+    question: 'What is traditional Chinese culture?',
+    chinese: '什么是中国传统文化？',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['traditional', 'Chinese culture']
   },
-  // 文化交流
   {
     id: 626,
-    text: 'Tell me about Chinese New Year.',
-    translation: '跟我讲讲中国新年。',
-    difficulty: 'medium',
-    category: '文化交流',
-    grade: 6,
+    question: 'I love Chinese festivals.',
+    chinese: '我喜欢中国的节日。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['Chinese festivals']
   },
   {
     id: 627,
-    text: 'Chinese New Year is the most important festival in China.',
-    translation: '中国新年是中国最重要的节日。',
-    difficulty: 'medium',
-    category: '文化交流',
-    grade: 6,
+    question: 'We celebrate Spring Festival every year.',
+    chinese: '我们每年庆祝春节。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['celebrate', 'Spring Festival']
   },
   {
     id: 628,
-    text: 'People celebrate with family reunions and delicious food.',
-    translation: '人们通过家庭团聚和美食来庆祝。',
-    difficulty: 'hard',
-    category: '文化交流',
-    grade: 6,
+    question: 'Art makes the world beautiful.',
+    chinese: '艺术让世界变得美丽。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['art', 'beautiful']
   },
   {
     id: 629,
-    text: 'What are some traditional Chinese festivals?',
-    translation: '有哪些中国传统节日？',
-    difficulty: 'medium',
-    category: '文化交流',
-    grade: 6,
+    question: 'Music connects people around the world.',
+    chinese: '音乐连接世界各地的人们。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['music', 'connects', 'around the world']
   },
   {
     id: 630,
-    text: 'We have Spring Festival, Dragon Boat Festival, and Mid-Autumn Festival.',
-    translation: '我们有春节、端午节和中秋节。',
-    difficulty: 'hard',
-    category: '文化交流',
-    grade: 6,
+    question: 'Literature helps us understand life.',
+    chinese: '文学帮助我们理解生活。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['literature', 'understand life']
   },
-  // 未来展望
   {
     id: 631,
-    text: 'What do you want to be in the future?',
-    translation: '你将来想成为什么样的人？',
-    difficulty: 'medium',
-    category: '未来展望',
-    grade: 6,
+    question: 'I enjoy visiting museums.',
+    chinese: '我喜欢参观博物馆。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['enjoy visiting', 'museums']
   },
   {
     id: 632,
-    text: 'I want to be a scientist.',
-    translation: '我想成为一名科学家。',
-    difficulty: 'medium',
-    category: '未来展望',
-    grade: 6,
+    question: 'History teaches us valuable lessons.',
+    chinese: '历史给我们宝贵的教训。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['history', 'valuable lessons']
   },
   {
     id: 633,
-    text: 'I hope to make a difference in the world.',
-    translation: '我希望对世界产生影响。',
-    difficulty: 'hard',
-    category: '未来展望',
-    grade: 6,
+    question: 'Every culture has its beauty.',
+    chinese: '每种文化都有它的美。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['culture', 'beauty']
   },
   {
     id: 634,
-    text: 'My dream is to become a doctor and help people.',
-    translation: '我的梦想是成为一名医生，帮助人们。',
-    difficulty: 'hard',
-    category: '未来展望',
-    grade: 6,
+    question: 'We should respect different cultures.',
+    chinese: '我们应该尊重不同的文化。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['respect different cultures']
   },
   {
     id: 635,
-    text: 'I will work hard to achieve my goals.',
-    translation: '我会努力实现我的目标。',
-    difficulty: 'medium',
-    category: '未来展望',
-    grade: 6,
+    question: 'Dance is a form of expression.',
+    chinese: '舞蹈是一种表达方式。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['dance', 'expression']
   },
-  // 复杂建议
   {
     id: 636,
-    text: 'I strongly recommend that you read this book.',
-    translation: '我强烈推荐你读这本书。',
-    difficulty: 'hard',
-    category: '复杂建议',
-    grade: 6,
+    question: 'Photography captures special moments.',
+    chinese: '摄影捕捉特别的时刻。',
+    difficulty: 6,
+    topic: '文化与艺术',
+    keyPhrases: ['photography', 'captures', 'special moments']
   },
+
+  // 科技与未来（12个）
   {
     id: 637,
-    text: 'It would be better if you practiced more.',
-    translation: '如果你多练习会更好。',
-    difficulty: 'hard',
-    category: '复杂建议',
-    grade: 6,
+    question: 'Technology changes our lives.',
+    chinese: '技术改变了我们的生活。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['technology', 'changes', 'lives']
   },
   {
     id: 638,
-    text: 'Why not join the English club?',
-    translation: '为什么不加入英语俱乐部呢？',
-    difficulty: 'medium',
-    category: '复杂建议',
-    grade: 6,
+    question: 'The internet helps us learn.',
+    chinese: '互联网帮助我们学习。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['internet', 'helps learn']
   },
   {
     id: 639,
-    text: 'You might consider taking an online course.',
-    translation: '你可以考虑参加在线课程。',
-    difficulty: 'hard',
-    category: '复杂建议',
-    grade: 6,
+    question: 'Artificial intelligence is developing fast.',
+    chinese: '人工智能发展得很快。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['artificial intelligence', 'developing']
   },
   {
     id: 640,
-    text: 'I suggest we work together on this project.',
-    translation: '我建议我们在这个项目上合作。',
-    difficulty: 'hard',
-    category: '复杂建议',
-    grade: 6,
+    question: 'Robots can do many things.',
+    chinese: '机器人可以做很多事情。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['robots', 'can do']
+  },
+  {
+    id: 641,
+    question: 'We use smartphones every day.',
+    chinese: '我们每天都用智能手机。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['smartphones', 'every day']
+  },
+  {
+    id: 642,
+    question: 'Social media connects people.',
+    chinese: '社交媒体连接人们。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['social media', 'connects']
+  },
+  {
+    id: 643,
+    question: 'What will the future be like?',
+    chinese: '未来会是什么样子？',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['what will the future be like']
+  },
+  {
+    id: 644,
+    question: 'We should use technology wisely.',
+    chinese: '我们应该明智地使用技术。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['use technology wisely']
+  },
+  {
+    id: 645,
+    question: 'Science makes our life better.',
+    chinese: '科学让我们的生活更美好。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['science', 'life better']
+  },
+  {
+    id: 646,
+    question: 'Virtual reality is amazing.',
+    chinese: '虚拟现实很神奇。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['virtual reality', 'amazing']
+  },
+  {
+    id: 647,
+    question: 'We need to learn about coding.',
+    chinese: '我们需要学习编程。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['learn about coding']
+  },
+  {
+    id: 648,
+    question: 'The future is full of possibilities.',
+    chinese: '未来充满可能性。',
+    difficulty: 6,
+    topic: '科技与未来',
+    keyPhrases: ['future', 'possibilities']
+  },
+
+  // 价值观与人生（12个）
+  {
+    id: 649,
+    question: 'What makes a person successful?',
+    chinese: '什么让人成功？',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['makes a person', 'successful']
+  },
+  {
+    id: 650,
+    question: 'Honesty is very important.',
+    chinese: '诚实非常重要。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['honesty', 'important']
+  },
+  {
+    id: 651,
+    question: 'We should be kind to others.',
+    chinese: '我们应该对他人友善。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['be kind to others']
+  },
+  {
+    id: 652,
+    question: 'Friendship is precious.',
+    chinese: '友谊是珍贵的。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['friendship', 'precious']
+  },
+  {
+    id: 653,
+    question: 'Respect your parents.',
+    chinese: '尊重你的父母。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['respect your parents']
+  },
+  {
+    id: 654,
+    question: 'Teamwork brings success.',
+    chinese: '团队合作带来成功。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['teamwork', 'brings success']
+  },
+  {
+    id: 655,
+    question: 'We should have dreams.',
+    chinese: '我们应该有梦想。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['have dreams']
+  },
+  {
+    id: 656,
+    question: 'Never give up easily.',
+    chinese: '不要轻易放弃。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['never give up']
+  },
+  {
+    id: 657,
+    question: 'Be brave and confident.',
+    chinese: '要勇敢自信。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['be brave', 'confident']
+  },
+  {
+    id: 658,
+    question: 'Love and care make the world better.',
+    chinese: '爱和关怀让世界更美好。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['love and care', 'make world better']
+  },
+  {
+    id: 659,
+    question: 'Learn from your mistakes.',
+    chinese: '从错误中学习。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['learn from mistakes']
+  },
+  {
+    id: 660,
+    question: 'Appreciate what you have.',
+    chinese: '珍惜你所拥有的。',
+    difficulty: 6,
+    topic: '价值观与人生',
+    keyPhrases: ['appreciate', 'what you have']
   },
 ];
 
-// 合并所有口语练习
-export const allSpeakingItems: PracticeItem[] = [
+// 合并所有口语
+export const allSpeaking: SpeakingPractice[] = [
   ...grade3Speaking,
   ...grade4Speaking,
   ...grade5Speaking,
   ...grade6Speaking,
 ];
 
-// 获取指定年级的口语练习
-export const getSpeakingByGrade = (grade: number): PracticeItem[] => {
-  return allSpeakingItems.filter(item => item.grade === grade);
+// 获取指定年级的口语
+export const getSpeakingByGrade = (grade: number): SpeakingPractice[] => {
+  return allSpeaking.filter(practice => practice.difficulty === grade);
 };
