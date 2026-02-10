@@ -15,7 +15,9 @@ const STORAGE_KEY = 'math-progress';
 // 保存进度
 export const saveMathProgress = (progress: MathProgress) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
   } catch (error) {
     console.error('Failed to save math progress:', error);
   }
@@ -24,9 +26,11 @@ export const saveMathProgress = (progress: MathProgress) => {
 // 获取进度
 export const getMathProgress = (): MathProgress | null => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
     }
   } catch (error) {
     console.error('Failed to get math progress:', error);
@@ -37,7 +41,9 @@ export const getMathProgress = (): MathProgress | null => {
 // 清除进度
 export const clearMathProgress = () => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   } catch (error) {
     console.error('Failed to clear math progress:', error);
   }

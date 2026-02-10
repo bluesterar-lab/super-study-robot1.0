@@ -16,7 +16,9 @@ const STORAGE_KEY = 'vocabulary-progress';
 // 保存进度
 export const saveVocabularyProgress = (progress: VocabularyProgress) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
   } catch (error) {
     console.error('Failed to save vocabulary progress:', error);
   }
@@ -25,9 +27,11 @@ export const saveVocabularyProgress = (progress: VocabularyProgress) => {
 // 获取进度
 export const getVocabularyProgress = (): VocabularyProgress | null => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
     }
   } catch (error) {
     console.error('Failed to get vocabulary progress:', error);

@@ -14,7 +14,9 @@ const STORAGE_KEY = 'speaking-progress';
 // 保存进度
 export const saveSpeakingProgress = (progress: SpeakingProgress) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
   } catch (error) {
     console.error('Failed to save speaking progress:', error);
   }
@@ -23,9 +25,11 @@ export const saveSpeakingProgress = (progress: SpeakingProgress) => {
 // 获取进度
 export const getSpeakingProgress = (): SpeakingProgress | null => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
     }
   } catch (error) {
     console.error('Failed to get speaking progress:', error);
@@ -36,8 +40,13 @@ export const getSpeakingProgress = (): SpeakingProgress | null => {
 // 清除进度
 export const clearSpeakingProgress = () => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   } catch (error) {
+    console.error('Failed to clear speaking progress:', error);
+  }
+};
     console.error('Failed to clear speaking progress:', error);
   }
 };
