@@ -1,14 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Volume2, Check, X, Star, RotateCcw, BookOpen, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { 
+  ArrowLeft, Volume2, Check, X, Star, RotateCcw, 
+  BookOpen, Target, Save, Clock, PlayCircle, FileText
+} from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import DictationComponent from '@/components/dictation-component';
 
 import { allVocabulary, getWordsByGrade } from '@/lib/vocabulary-data';
+import { 
+  saveVocabularyProgress, 
+  getVocabularyProgress, 
+  clearVocabularyProgress,
+  hasValidProgress,
+  getProgressAge,
+  type VocabularyProgress 
+} from '@/lib/vocabulary-progress';
 
 type Word = {
   id: number;
@@ -28,6 +41,8 @@ type Category = {
   color: string;
   description: string;
 };
+
+type Mode = 'learn' | 'quiz' | 'dictation-en-zh' | 'dictation-zh-en';
 
 const categories: Category[] = [
   {
@@ -92,22 +107,72 @@ export default function VocabularyPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
+  const [mode, setMode] = useState<Mode>('learn');
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [savedProgress, setSavedProgress] = useState<VocabularyProgress | null>(null);
+  const [showDictationComplete, setShowDictationComplete] = useState(false);
+  const [dictationResults, setDictationResults] = useState<{ score: number; correct: boolean[] } | null>(null);
 
+  // 检查是否有保存的进度
+  useEffect(() => {
+    if (hasValidProgress()) {
+      const progress = getVocabularyProgress();
+      setSavedProgress(progress);
+    }
+  }, []);
+
+  // 计算过滤后的单词
   const filteredWords = selectedGrade && selectedCategory
     ? getWordsByGrade(selectedGrade).filter(w => w.category === selectedCategory)
     : selectedGrade
     ? getWordsByGrade(selectedGrade)
     : [];
 
+  // 自动保存进度
+  useEffect(() => {
+    if (selectedGrade && currentIndex > 0) {
+      const progress: VocabularyProgress = {
+        grade: selectedGrade,
+        category: selectedCategory,
+        mode,
+        currentIndex,
+        score,
+        stars,
+        timestamp: Date.now(),
+        totalWords: filteredWords.length
+      };
+      saveVocabularyProgress(progress);
+    }
+  }, [currentIndex, score, stars, selectedGrade, selectedCategory, mode, filteredWords.length]);
+
   const currentWord = filteredWords[currentIndex];
   const progress = filteredWords.length > 0 
     ? ((currentIndex + 1) / filteredWords.length) * 100 
     : 0;
+
+  // 恢复进度
+  const handleResumeProgress = () => {
+    if (savedProgress) {
+      setSelectedGrade(savedProgress.grade);
+      setSelectedCategory(savedProgress.category);
+      setCurrentIndex(savedProgress.currentIndex);
+      setMode(savedProgress.mode);
+      setScore(savedProgress.score);
+      setStars(savedProgress.stars);
+      setSavedProgress(null);
+    }
+  };
+
+  // 清除保存的进度
+  const handleClearProgress = () => {
+    clearVocabularyProgress();
+    setSavedProgress(null);
+    reset();
+  };
 
   const generateOptions = () => {
     if (!currentWord) return [];
@@ -159,9 +224,13 @@ export default function VocabularyPage() {
       setAnswered(false);
       setSelectedOption(null);
     } else {
-      alert(`🎉 恭喜完成练习！\n得分: ${score}/${filteredWords.length}`);
-      reset();
+      handleComplete();
     }
+  };
+
+  const handleComplete = () => {
+    clearVocabularyProgress();
+    setShowExitDialog(true);
   };
 
   const reset = () => {
@@ -171,6 +240,8 @@ export default function VocabularyPage() {
     setMode('learn');
     setAnswered(false);
     setSelectedOption(null);
+    setSelectedCategory(null);
+    setSelectedGrade(null);
   };
 
   const handleRestart = () => {
@@ -180,6 +251,8 @@ export default function VocabularyPage() {
     setMode('learn');
     setAnswered(false);
     setSelectedOption(null);
+    clearVocabularyProgress();
+    setShowExitDialog(false);
   };
 
   const getGradeColor = (grade: number) => {
@@ -192,6 +265,22 @@ export default function VocabularyPage() {
     }
   };
 
+  const getModeText = () => {
+    switch (mode) {
+      case 'learn': return '学习模式';
+      case 'quiz': return '测试模式';
+      case 'dictation-en-zh': return '听写 - 英译中';
+      case 'dictation-zh-en': return '听写 - 中译英';
+      default: return '';
+    }
+  };
+
+  const handleDictationComplete = (score: number, correct: boolean[]) => {
+    setDictationResults({ score, correct });
+    setShowDictationComplete(true);
+    clearVocabularyProgress();
+  };
+
   // 显示选择页面
   if (!currentWord) {
     return (
@@ -200,335 +289,518 @@ export default function VocabularyPage() {
         <div className="flex items-center gap-4 mb-6">
           <Link href="/">
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              单词闯关
-            </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              选择年级和单词类型
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-500" />
-            <span className="font-bold text-lg">{stars}</span>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-bold">单词学习</h1>
         </div>
 
-        {/* 年级选择 */}
-        <Card className="mb-6 hover:shadow-xl transition-shadow">
-          <CardContent className="p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-500" />
-              选择年级
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[3, 4, 5, 6].map((grade) => (
-                <Button
-                  key={grade}
-                  variant={selectedGrade === grade ? "default" : "outline"}
-                  size="lg"
-                  onClick={() => {
-                    setSelectedGrade(grade);
-                    setSelectedCategory(null);
-                  }}
-                  className={`text-lg font-semibold ${selectedGrade === grade ? 'bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}
-                >
-                  {grade}年级
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 分类选择 */}
-        {selectedGrade && (
-          <Card className="mb-6 hover:shadow-xl transition-shadow">
+        {/* 恢复进度卡片 */}
+        {savedProgress && (
+          <Card className="mb-6 border-2 border-primary bg-primary/5">
             <CardContent className="p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Target className="w-6 h-6 text-purple-500" />
-                选择单词类型
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {categories.map((category) => {
-                  const wordCount = getWordsByGrade(selectedGrade).filter(w => w.category === category.id).length;
-                  if (wordCount === 0) return null;
-                  return (
-                    <Card
-                      key={category.id}
-                      className={`cursor-pointer hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${
-                        selectedCategory === category.id
-                          ? 'border-blue-500 dark:border-blue-700'
-                          : 'border-transparent'
-                      }`}
-                      onClick={() => setSelectedCategory(category.id)}
-                    >
-                      <CardContent className="p-6 text-center">
-                        <div className="text-5xl mb-3">{category.icon}</div>
-                        <h4 className="text-lg font-bold mb-2">{category.name}</h4>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                          {category.description}
-                        </p>
-                        <Badge variant="outline" className="border-slate-300 dark:border-slate-700">
-                          {wordCount} 个单词
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Clock className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">恢复学习进度</h3>
+                    <p className="text-sm text-muted-foreground">
+                      保存于 {getProgressAge()}
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="outline">{getModeText()}</Badge>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">年级:</span>
+                  <span className="font-medium">三年级</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">进度:</span>
+                  <span className="font-medium">{savedProgress.currentIndex + 1} / {savedProgress.totalWords}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">得分:</span>
+                  <span className="font-medium">{savedProgress.score}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleResumeProgress} className="flex-1">
+                  <PlayCircle className="mr-2 h-4 w-4" />
+                  继续学习
+                </Button>
+                <Button variant="outline" onClick={handleClearProgress}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  重新开始
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* 开始按钮 */}
-        {selectedGrade && selectedCategory && (
-          <Card className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700">
-            <CardContent className="p-6 text-center">
-              <div className="mb-4 text-lg">
-                共 <span className="font-bold text-green-600">
-                  {getWordsByGrade(selectedGrade).filter(w => w.category === selectedCategory).length}
-                </span> 个单词
-              </div>
-              <div className="flex gap-4 justify-center">
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setCurrentIndex(0);
-                    setScore(0);
-                    setStars(0);
-                    setMode('learn');
-                    setAnswered(false);
-                    setSelectedOption(null);
-                  }}
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg px-12"
+        {/* 年级选择 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[3, 4, 5, 6].map((grade) => (
+            <Card
+              key={grade}
+              className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                selectedGrade === grade ? 'ring-2 ring-primary' : ''
+              }`}
+              onClick={() => {
+                setSelectedGrade(grade);
+                setSelectedCategory(null);
+              }}
+            >
+              <CardContent className="p-6 text-center">
+                <div className={`text-4xl font-bold mb-2 ${getGradeColor(grade)} inline-block px-4 py-2 rounded-lg`}>
+                  {grade}
+                </div>
+                <div className="text-sm text-muted-foreground">年级</div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  {getWordsByGrade(grade).length} 个单词
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* 分类选择 */}
+        {selectedGrade && (
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-4">选择分类</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mb-4"
+              onClick={() => setSelectedCategory(null)}
+            >
+              显示全部
+            </Button>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {categories.map((category) => (
+                <Card
+                  key={category.id}
+                  className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                    selectedCategory === category.id ? 'ring-2 ring-primary' : ''
+                  }`}
+                  onClick={() => setSelectedCategory(category.id)}
                 >
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  学习模式
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setCurrentIndex(0);
-                    setScore(0);
-                    setStars(0);
-                    setMode('quiz');
-                    setAnswered(false);
-                    setSelectedOption(null);
-                  }}
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-lg px-12"
-                >
-                  <Target className="w-5 h-5 mr-2" />
-                  测验模式
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-4xl mb-2">{category.icon}</div>
+                    <div className="font-semibold">{category.name}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {category.description}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 学习模式选择 */}
+        {selectedGrade && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">选择学习模式</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                  mode === 'learn' ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setMode('learn')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-100 rounded-lg">
+                      <BookOpen className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-lg">学习模式</div>
+                      <div className="text-sm text-muted-foreground">
+                        学习单词的含义和发音
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                  mode === 'quiz' ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setMode('quiz')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-green-100 rounded-lg">
+                      <Target className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-lg">测试模式</div>
+                      <div className="text-sm text-muted-foreground">
+                        通过选择题测试记忆
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                  mode === 'dictation-en-zh' ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setMode('dictation-en-zh')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-purple-100 rounded-lg">
+                      <FileText className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-lg">听写 - 英译中</div>
+                      <div className="text-sm text-muted-foreground">
+                        看英文写中文意思
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+                  mode === 'dictation-zh-en' ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setMode('dictation-zh-en')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-orange-100 rounded-lg">
+                      <PlayCircle className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-lg">听写 - 中译英</div>
+                      <div className="text-sm text-muted-foreground">
+                        看中文写英文单词
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {mode && (
+              <Button 
+                size="lg" 
+                className="w-full"
+                onClick={() => setCurrentIndex(0)}
+              >
+                开始学习
+              </Button>
+            )}
+          </div>
         )}
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
-      {/* 顶部导航 */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => {
-          setSelectedCategory(null);
-          setSelectedGrade(null);
-          setCurrentIndex(0);
-          setMode('learn');
-        }}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            单词闯关
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {mode === 'learn' ? '学习模式' : '测验模式'} • {currentIndex + 1} / {filteredWords.length}
-          </p>
+  // 听写模式
+  if (mode === 'dictation-en-zh' || mode === 'dictation-zh-en') {
+    return (
+      <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => setShowExitDialog(true)}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl md:text-2xl font-bold">{getModeText()}</h1>
+          </div>
+          <Badge className={getGradeColor(selectedGrade || 3)}>
+            {selectedGrade}年级
+          </Badge>
         </div>
-        <div className="flex items-center gap-2">
-          <Star className="w-5 h-5 text-yellow-500" />
-          <span className="font-bold text-lg">{stars}</span>
-        </div>
-      </div>
 
-      {/* 进度条 */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            进度
-          </span>
-          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-            {Math.round(progress)}%
-          </span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
+        <DictationComponent
+          words={filteredWords}
+          mode={mode}
+          currentIndex={currentIndex}
+          onComplete={handleDictationComplete}
+          onNext={handleNext}
+          onSkip={handleNext}
+        />
 
-      {/* 学习模式 */}
-      {mode === 'learn' && (
-        <Card className="mb-6 hover:shadow-xl transition-shadow">
-          <CardContent className="p-8">
-            <div className="text-center">
-              <Badge className="mb-4 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                Level {currentWord.level}
-              </Badge>
-              
-              <div className="mb-6">
-                <h2 className="text-5xl md:text-7xl font-bold mb-2 text-slate-900 dark:text-white">
-                  {currentWord.word}
-                </h2>
-                <p className="text-xl text-slate-600 dark:text-slate-400 mb-2">
-                  {currentWord.chinese}
-                </p>
-                <p className="text-lg text-slate-500 dark:text-slate-500">
-                  {currentWord.pronunciation}
-                </p>
+        {/* 听写完成对话框 */}
+        <Dialog open={showDictationComplete} onOpenChange={setShowDictationComplete}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>🎉 听写完成！</DialogTitle>
+              <DialogDescription>
+                查看你的成绩
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="text-center">
+                <div className="text-5xl font-bold text-primary mb-2">
+                  {dictationResults?.score} / {filteredWords.length}
+                </div>
+                <div className="text-muted-foreground">
+                  得分率: {Math.round(((dictationResults?.score || 0) / filteredWords.length) * 100)}%
+                </div>
               </div>
 
-              <Button
-                size="lg"
-                onClick={() => speakWord(currentWord.word)}
-                className="mb-8 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-              >
-                <Volume2 className="w-5 h-5 mr-2" />
-                播放发音
-              </Button>
-
-              <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 mb-6">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-2">例句</h3>
-                  <p className="text-lg text-slate-800 dark:text-slate-200 mb-2">
-                    {currentWord.example}
-                  </p>
-                  <p className="text-base text-slate-600 dark:text-slate-400">
-                    {currentWord.exampleChinese}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <div className="flex gap-4 justify-center">
-                {currentIndex > 0 && (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => {
-                      setCurrentIndex(currentIndex - 1);
-                      setAnswered(false);
-                      setSelectedOption(null);
-                    }}
-                  >
-                    上一个
-                  </Button>
-                )}
-                <Button
-                  size="lg"
-                  onClick={handleNext}
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-                >
-                  {currentIndex < filteredWords.length - 1 ? '下一个' : '完成'}
-                </Button>
+              <div className="bg-muted p-4 rounded-lg">
+                <div className="text-sm text-muted-foreground mb-2">正确率详情：</div>
+                <div className="flex flex-wrap gap-2">
+                  {dictationResults?.correct.map((correct, index) => (
+                    <div
+                      key={index}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full text-white text-sm font-bold ${
+                        correct ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDictationComplete(false)}>
+                关闭
+              </Button>
+              <Button onClick={handleRestart}>
+                重新开始
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* 测验模式 */}
-      {mode === 'quiz' && (
-        <Card className="mb-6 hover:shadow-xl transition-shadow">
-          <CardContent className="p-8">
-            <div className="text-center mb-8">
-              <Badge className="mb-4 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                {currentWord.chinese}
-              </Badge>
-              
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                选择正确的英文单词
-              </h2>
+        {/* 退出确认对话框 */}
+        <Dialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>确认退出？</DialogTitle>
+              <DialogDescription>
+                当前进度已保存，下次可以继续学习
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowExitDialog(false)}>
+                取消
+              </Button>
+              <Button onClick={() => {
+                setShowExitDialog(false);
+                reset();
+              }}>
+                退出
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-6">
+  // 学习和测试模式
+  return (
+    <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => setShowExitDialog(true)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold">{getModeText()}</h1>
+            <div className="text-sm text-muted-foreground">
+              {selectedGrade}年级 · {selectedCategory || '全部'}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className={getGradeColor(selectedGrade || 3)}>
+            {selectedGrade}年级
+          </Badge>
+          {mode === 'quiz' && (
+            <Badge variant="outline">
+              {score} / {filteredWords.length}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <Card className="w-full">
+        <CardContent className="p-6 space-y-6">
+          {/* 进度条 */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>进度</span>
+              <span>{currentIndex + 1} / {filteredWords.length}</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          {/* 单词卡片 */}
+          <div className="text-center space-y-6 py-8">
+            <div className="space-y-2">
+              <div className="text-5xl md:text-6xl font-bold text-primary mb-4">
+                {currentWord.word}
+              </div>
+              <div className="flex items-center justify-center gap-2 text-lg text-muted-foreground">
+                <Volume2 
+                  className="w-5 h-5 cursor-pointer hover:text-primary" 
+                  onClick={() => speakWord(currentWord.word)}
+                />
+                <span>{currentWord.pronunciation}</span>
+              </div>
+            </div>
+
+            {mode === 'learn' && (
+              <div className="space-y-4">
+                <div className="text-3xl font-semibold text-foreground">
+                  {currentWord.chinese}
+                </div>
+                <div className="bg-muted p-4 rounded-lg space-y-2">
+                  <div className="text-sm text-muted-foreground">例句：</div>
+                  <div className="text-lg">{currentWord.example}</div>
+                  <div className="text-sm text-muted-foreground">{currentWord.exampleChinese}</div>
+                </div>
+              </div>
+            )}
+
+            {mode === 'quiz' && (
+              <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
                 {quizOptions.map((option, index) => {
-                  const isCorrect = option === currentWord.word;
                   const isSelected = selectedOption === index;
-                  
-                  let bgColor = 'bg-white dark:bg-slate-800';
-                  let borderColor = 'border-slate-200 dark:border-slate-700';
-                  
-                  if (answered) {
-                    if (isCorrect) {
-                      bgColor = 'bg-green-50 dark:bg-green-900/20';
-                      borderColor = 'border-green-500 dark:border-green-600';
-                    } else if (isSelected) {
-                      bgColor = 'bg-red-50 dark:bg-red-900/20';
-                      borderColor = 'border-red-500 dark:border-red-600';
-                    }
-                  } else if (isSelected) {
-                    bgColor = 'bg-blue-50 dark:bg-blue-900/20';
-                    borderColor = 'border-blue-500 dark:border-blue-600';
+                  const isCorrect = option === currentWord.word;
+                  const showResult = answered;
+
+                  let buttonClass = 'transition-all';
+                  if (!showResult) {
+                    buttonClass = isSelected ? 'ring-2 ring-primary' : '';
+                  } else if (isCorrect) {
+                    buttonClass = 'bg-green-100 dark:bg-green-900 border-green-500';
+                  } else if (isSelected && !isCorrect) {
+                    buttonClass = 'bg-red-100 dark:bg-red-900 border-red-500';
                   }
 
                   return (
-                    <Card
+                    <Button
                       key={index}
-                      className={`cursor-pointer transition-all border-2 ${bgColor} ${borderColor} ${
-                        !answered ? 'hover:shadow-lg' : ''
-                      }`}
+                      variant="outline"
+                      className={`h-16 text-lg ${buttonClass}`}
                       onClick={() => handleOptionClick(option)}
+                      disabled={answered}
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-center gap-3">
-                          <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                            {option}
-                          </span>
-                          {answered && isCorrect && <Check className="w-6 h-6 text-green-600" />}
-                          {answered && isSelected && !isCorrect && <X className="w-6 h-6 text-red-600" />}
-                        </div>
-                      </CardContent>
-                    </Card>
+                      {option}
+                    </Button>
                   );
                 })}
               </div>
+            )}
 
-              {answered && (
-                <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 max-w-2xl mx-auto mb-6">
-                  <CardContent className="p-6 text-left">
-                    <div className="flex items-start gap-3 mb-3">
-                      <Volume2 className="w-5 h-5 text-blue-600 mt-1 cursor-pointer" onClick={() => speakWord(currentWord.word)} />
-                      <div>
-                        <p className="font-bold text-lg text-slate-900 dark:text-white mb-2">
-                          {currentWord.word} • {currentWord.pronunciation}
-                        </p>
-                        <p className="text-base text-slate-700 dark:text-slate-300 mb-2">
-                          {currentWord.example}
-                        </p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {currentWord.exampleChinese}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+            {answered && mode === 'quiz' && (
+              <div className="flex items-center justify-center gap-2 text-xl font-semibold">
+                {selectedOption !== null && quizOptions[selectedOption] === currentWord.word ? (
+                  <div className="text-green-600 flex items-center gap-2">
+                    <Check className="w-6 h-6" />
+                    正确！
+                  </div>
+                ) : (
+                  <div className="text-red-600 flex items-center gap-2">
+                    <X className="w-6 h-6" />
+                    正确答案是：{currentWord.word}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
-              {answered && (
-                <Button
-                  size="lg"
-                  onClick={handleNext}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                >
-                  {currentIndex < filteredWords.length - 1 ? '下一个' : '完成'}
-                </Button>
-              )}
+          {/* 按钮 */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={handleNext}
+              disabled={mode === 'quiz' && !answered}
+              size="lg"
+            >
+              {currentIndex < filteredWords.length - 1 ? '下一个' : '完成'}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleRestart}
+              size="lg"
+            >
+              重新开始
+            </Button>
+          </div>
+
+          {/* 星星显示 */}
+          {stars > 0 && (
+            <div className="flex items-center justify-center gap-1">
+              {Array.from({ length: stars }).map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 完成对话框 */}
+      <Dialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {mode === 'quiz' ? '🎉 测试完成！' : '📚 学习完成！'}
+            </DialogTitle>
+            <DialogDescription>
+              {mode === 'quiz' 
+                ? '查看你的测试成绩'
+                : '当前进度已保存，下次可以继续学习'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {mode === 'quiz' && (
+              <div className="text-center">
+                <div className="text-5xl font-bold text-primary mb-2">
+                  {score} / {filteredWords.length}
+                </div>
+                <div className="text-muted-foreground">
+                  得分率: {Math.round((score / filteredWords.length) * 100)}%
+                </div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  {Array.from({ length: stars }).map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+              </div>
+            )}
+            {mode === 'learn' && (
+              <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg">
+                <Save className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="font-medium">学习进度已保存</div>
+                  <div className="text-sm text-muted-foreground">
+                    你已经学习了 {currentIndex + 1} 个单词，下次可以继续
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExitDialog(false)}>
+              {mode === 'quiz' ? '查看详情' : '继续学习'}
+            </Button>
+            <Button onClick={handleRestart}>
+              重新开始
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
