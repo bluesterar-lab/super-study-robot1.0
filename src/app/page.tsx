@@ -29,7 +29,7 @@ export default function Home() {
       color: 'bg-blue-500',
       gradient: 'from-blue-400 to-blue-600',
       href: '/vocabulary',
-      progress: 65,
+      progress: 0,
     },
     {
       title: '绘本阅读',
@@ -38,7 +38,7 @@ export default function Home() {
       color: 'bg-purple-500',
       gradient: 'from-purple-400 to-purple-600',
       href: '/reading',
-      progress: 40,
+      progress: 0,
     },
     {
       title: '口语练习',
@@ -47,7 +47,7 @@ export default function Home() {
       color: 'bg-pink-500',
       gradient: 'from-pink-400 to-pink-600',
       href: '/speaking',
-      progress: 30,
+      progress: 0,
     },
     {
       title: '学习进度',
@@ -56,7 +56,7 @@ export default function Home() {
       color: 'bg-amber-500',
       gradient: 'from-amber-400 to-amber-600',
       href: '/progress',
-      progress: 100,
+      progress: 0,
     },
   ];
 
@@ -85,11 +85,11 @@ export default function Home() {
                 <p className="text-sm text-slate-600 dark:text-slate-400">完成 3 个学习模块</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">2/3</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">0/3</div>
                 <div className="text-xs text-slate-500">已完成</div>
               </div>
             </div>
-            <Progress value={66} className="h-3" />
+            <Progress value={0} className="h-3" />
           </CardContent>
         </Card>
       </div>
@@ -170,10 +170,10 @@ export default function Home() {
         <CardContent className="p-6 text-center">
           <div className="text-6xl mb-2">🔥</div>
           <h3 className="text-2xl font-bold text-amber-800 dark:text-amber-300 mb-1">
-            连续学习 7 天
+            连续学习 0 天
           </h3>
           <p className="text-sm text-amber-700 dark:text-amber-400">
-            太棒了！继续保持学习的热情！
+            开始你的学习之旅吧！
           </p>
         </CardContent>
       </Card>

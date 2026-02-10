@@ -22,27 +22,27 @@ type ProgressData = {
 };
 
 const progressData: ProgressData = {
-  totalDays: 15,
-  todayTime: 45,
-  totalTime: 360,
-  vocabularyLearned: 35,
-  vocabularyTotal: 50,
-  readingBooks: 3,
-  speakingPractice: 12,
-  speakingScore: 85,
-  currentStreak: 7,
+  totalDays: 0,
+  todayTime: 0,
+  totalTime: 0,
+  vocabularyLearned: 0,
+  vocabularyTotal: 15,
+  readingBooks: 0,
+  speakingPractice: 0,
+  speakingScore: 0,
+  currentStreak: 0,
   weeklyGoal: 150,
-  weeklyProgress: 45,
+  weeklyProgress: 0,
 };
 
 const weeklyActivity = [
-  { day: '周一', time: 30 },
-  { day: '周二', time: 45 },
-  { day: '周三', time: 25 },
-  { day: '周四', time: 50 },
-  { day: '周五', time: 35 },
-  { day: '周六', time: 60 },
-  { day: '周日', time: 45 },
+  { day: '周一', time: 0 },
+  { day: '周二', time: 0 },
+  { day: '周三', time: 0 },
+  { day: '周四', time: 0 },
+  { day: '周五', time: 0 },
+  { day: '周六', time: 0 },
+  { day: '周日', time: 0 },
 ];
 
 const achievements = [
@@ -51,21 +51,21 @@ const achievements = [
     title: '初学者',
     description: '完成第一次学习',
     icon: '🎉',
-    unlocked: true,
+    unlocked: false,
   },
   {
     id: 2,
     title: '连续学习者',
     description: '连续学习 7 天',
     icon: '🔥',
-    unlocked: true,
+    unlocked: false,
   },
   {
     id: 3,
     title: '词汇达人',
     description: '学习 30 个单词',
     icon: '📚',
-    unlocked: true,
+    unlocked: false,
   },
   {
     id: 4,
@@ -121,16 +121,16 @@ export default function ProgressPage() {
               <div className="text-6xl">🔥</div>
               <div>
                 <h3 className="text-2xl font-bold text-amber-800 dark:text-amber-300 mb-1">
-                  连续学习 {progressData.currentStreak} 天
+                  连续学习 0 天
                 </h3>
                 <p className="text-sm text-amber-700 dark:text-amber-400">
-                  你真棒！继续保持！
+                  开始你的学习之旅吧！
                 </p>
               </div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-amber-800 dark:text-amber-300">
-                {progressData.totalDays}
+                0
               </div>
               <div className="text-sm text-amber-700 dark:text-amber-400">总天数</div>
             </div>
@@ -152,7 +152,7 @@ export default function ProgressPage() {
               </div>
             </div>
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {progressData.todayTime}
+              0
             </div>
             <div className="text-sm text-slate-600 dark:text-slate-400 mt-2">
               目标: 60 分钟
@@ -168,14 +168,14 @@ export default function ProgressPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">总学习时长</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">累计 {progressData.totalTime} 分钟</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">累计 0 分钟</p>
               </div>
             </div>
             <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-              {Math.floor(progressData.totalTime / 60)}h {progressData.totalTime % 60}m
+              0h 0m
             </div>
             <div className="text-sm text-slate-600 dark:text-slate-400 mt-2">
-              相当于 {Math.floor(progressData.totalTime / 30)} 节课
+              相当于 0 节课
             </div>
           </CardContent>
         </Card>
@@ -218,14 +218,14 @@ export default function ProgressPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {progressData.readingBooks} 本
+                    0 本
                   </span>
                   <Badge variant="outline" className="border-purple-300 dark:border-purple-700">
-                    60%
+                    0%
                   </Badge>
                 </div>
               </div>
-              <Progress value={60} className="h-3" />
+              <Progress value={0} className="h-3" />
             </div>
 
             {/* 口语练习 */}
@@ -237,14 +237,14 @@ export default function ProgressPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {progressData.speakingPractice} 次
+                    0 次
                   </span>
                   <Badge variant="outline" className="border-pink-300 dark:border-pink-700">
-                    平均 {progressData.speakingScore}分
+                    平均 0分
                   </Badge>
                 </div>
               </div>
-              <Progress value={progressData.speakingScore} className="h-3" />
+              <Progress value={0} className="h-3" />
             </div>
           </div>
         </CardContent>
@@ -259,7 +259,7 @@ export default function ProgressPage() {
               本周学习统计
             </h3>
             <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-              {weeklyProgressPercent}%
+              0%
             </Badge>
           </div>
 
@@ -267,10 +267,10 @@ export default function ProgressPage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-slate-600 dark:text-slate-400">本周目标</span>
               <span className="text-sm font-medium">
-                {progressData.weeklyProgress}/{progressData.weeklyGoal} 分钟
+                0/150 分钟
               </span>
             </div>
-            <Progress value={weeklyProgressPercent} className="h-2" />
+            <Progress value={0} className="h-2" />
           </div>
 
           <div className="flex items-end justify-between gap-2">
@@ -339,15 +339,15 @@ export default function ProgressPage() {
       <Card className="bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-blue-900/30 border-purple-300 dark:border-purple-700">
         <CardContent className="p-8 text-center">
           <div className="text-6xl mb-4">🌟</div>
-          <h3 className="text-2xl font-bold mb-2">你真了不起！</h3>
+          <h3 className="text-2xl font-bold mb-2">开始你的学习之旅！</h3>
           <p className="text-lg text-slate-700 dark:text-slate-300 mb-4">
-            坚持{progressData.currentStreak}天学习了英语，你的努力一定会得到回报！
+            每天坚持学习，积累知识，你会发现自己的进步！
           </p>
           <div className="flex justify-center gap-4">
             <Link href="/vocabulary">
               <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
                 <BookOpen className="w-4 h-4 mr-2" />
-                继续学习
+                开始学习
               </Button>
             </Link>
             <Link href="/reading">
