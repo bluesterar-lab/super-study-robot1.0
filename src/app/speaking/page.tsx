@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ArrowLeft, Mic, MicOff, Play, Check, X, RotateCcw, Volume2 } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Play, Volume2, Star, BookOpen, Target } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+
+import { allSpeakingItems, getSpeakingByGrade } from '@/lib/speaking-data';
 
 type PracticeItem = {
   id: number;
@@ -14,68 +16,79 @@ type PracticeItem = {
   translation: string;
   difficulty: 'easy' | 'medium' | 'hard';
   category: string;
+  grade: number;
 };
 
-const practiceItems: PracticeItem[] = [
+type Category = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+};
+
+const categories: Category[] = [
   {
-    id: 1,
-    text: 'Hello, how are you?',
-    translation: '你好，你好吗？',
-    difficulty: 'easy',
-    category: '日常问候',
+    id: '日常问候',
+    name: '日常问候',
+    icon: '👋',
+    color: 'from-blue-400 to-blue-600',
+    description: '基础问候语',
   },
   {
-    id: 2,
-    text: 'Good morning!',
-    translation: '早上好！',
-    difficulty: 'easy',
-    category: '日常问候',
+    id: '自我介绍',
+    name: '自我介绍',
+    icon: '👤',
+    color: 'from-green-400 to-green-600',
+    description: '介绍自己',
   },
   {
-    id: 3,
-    text: 'What is your name?',
-    translation: '你叫什么名字？',
-    difficulty: 'medium',
-    category: '日常问候',
+    id: '日常对话',
+    name: '日常对话',
+    icon: '💬',
+    color: 'from-purple-400 to-purple-600',
+    description: '日常交流',
   },
   {
-    id: 4,
-    text: 'Nice to meet you.',
-    translation: '很高兴见到你。',
-    difficulty: 'medium',
-    category: '日常问候',
+    id: '家庭介绍',
+    name: '家庭介绍',
+    icon: '👨‍👩‍👧',
+    color: 'from-pink-400 to-pink-600',
+    description: '介绍家人',
   },
   {
-    id: 5,
-    text: 'How are you doing today?',
-    translation: '你今天怎么样？',
-    difficulty: 'hard',
-    category: '日常问候',
+    id: '学校生活',
+    name: '学校生活',
+    icon: '🏫',
+    color: 'from-amber-400 to-amber-600',
+    description: '校园话题',
   },
   {
-    id: 6,
-    text: 'I am fine, thank you.',
-    translation: '我很好，谢谢。',
-    difficulty: 'medium',
-    category: '自我介绍',
+    id: '爱好兴趣',
+    name: '爱好兴趣',
+    icon: '🎨',
+    color: 'from-cyan-400 to-cyan-600',
+    description: '兴趣话题',
   },
   {
-    id: 7,
-    text: 'My name is Tom.',
-    translation: '我叫汤姆。',
-    difficulty: 'easy',
-    category: '自我介绍',
+    id: '日常活动',
+    name: '日常活动',
+    icon: '🌅',
+    color: 'from-orange-400 to-orange-600',
+    description: '日常生活',
   },
   {
-    id: 8,
-    text: 'I live in Beijing.',
-    translation: '我住在北京。',
-    difficulty: 'medium',
-    category: '自我介绍',
+    id: '礼貌表达',
+    name: '礼貌表达',
+    icon: '🤝',
+    color: 'from-teal-400 to-teal-600',
+    description: '礼貌用语',
   },
 ];
 
 export default function SpeakingPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedText, setRecordedText] = useState('');
@@ -83,12 +96,19 @@ export default function SpeakingPage() {
   const [score, setScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [feedback, setFeedback] = useState('');
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [stars, setStars] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  const currentItem = practiceItems[currentIndex];
-  const progress = ((currentIndex + 1) / practiceItems.length) * 100;
+  const filteredItems = selectedGrade && selectedCategory
+    ? getSpeakingByGrade(selectedGrade).filter(item => item.category === selectedCategory)
+    : selectedGrade
+    ? getSpeakingByGrade(selectedGrade)
+    : [];
+
+  const currentItem = filteredItems[currentIndex];
+  const progress = filteredItems.length > 0 
+    ? ((currentIndex + 1) / filteredItems.length) * 100 
+    : 0;
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -113,13 +133,11 @@ export default function SpeakingPage() {
 
       recorder.onstop = async () => {
         const audioBlob = new Blob(chunks, { type: 'audio/wav' });
-        setAudioChunks(chunks);
         await processAudio(audioBlob);
       };
 
       recorder.start();
       mediaRecorderRef.current = recorder;
-      setMediaRecorder(recorder);
       setIsRecording(true);
       setRecordedText('');
       setFeedback('');
@@ -171,6 +189,11 @@ export default function SpeakingPage() {
         setScore(roundedScore);
         setTotalScore(totalScore + roundedScore);
 
+        // 获取星星
+        if (roundedScore >= 70) {
+          setStars(stars + 1);
+        }
+
         // 提供反馈
         if (roundedScore >= 90) {
           setFeedback('🎉 太棒了！发音非常标准！');
@@ -198,85 +221,215 @@ export default function SpeakingPage() {
   };
 
   const calculateSimilarity = (str1: string, str2: string): number => {
-    if (!str1 || !str2) return 0;
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const matrix: number[][] = [];
 
-    const words1 = str1.split(/\s+/);
-    const words2 = str2.split(/\s+/);
-    
-    let matchCount = 0;
-    words1.forEach(word => {
-      if (words2.includes(word)) {
-        matchCount++;
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [];
+      for (let j = 0; j <= len2; j++) {
+        if (i === 0) matrix[i][j] = j;
+        else if (j === 0) matrix[i][j] = i;
+        else {
+          const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
       }
-    });
+    }
 
-    return matchCount / Math.max(words1.length, words2.length);
+    const distance = matrix[len1][len2];
+    const maxLen = Math.max(len1, len2);
+    return maxLen === 0 ? 1 : 1 - distance / maxLen;
   };
 
   const handleNext = () => {
-    if (currentIndex < practiceItems.length - 1) {
+    if (currentIndex < filteredItems.length - 1) {
       setCurrentIndex(currentIndex + 1);
-      resetState();
+      setScore(0);
+      setRecordedText('');
+      setFeedback('');
     } else {
-      alert(`🎉 恭喜完成本次练习！\n总得分: ${totalScore}`);
-      setCurrentIndex(0);
-      setTotalScore(0);
-      resetState();
+      alert(`🎉 恭喜完成练习！\n总得分: ${totalScore} 分\n获得星星: ${stars} 颗`);
+      reset();
     }
   };
 
-  const handleReset = () => {
-    resetState();
+  const reset = () => {
+    setCurrentIndex(0);
+    setScore(0);
+    setTotalScore(0);
+    setStars(0);
+    setRecordedText('');
+    setFeedback('');
   };
 
-  const resetState = () => {
-    setRecordedText('');
-    setScore(0);
-    setFeedback('');
-    setIsRecording(false);
-    setIsProcessing(false);
+  const getGradeColor = (grade: number) => {
+    switch (grade) {
+      case 3: return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+      case 4: return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+      case 5: return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
+      case 6: return 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300';
+      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'hard':
-        return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-      default:
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
+      case 'easy': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'hard': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300';
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600 dark:text-green-400';
-    if (score >= 70) return 'text-blue-600 dark:text-blue-400';
-    if (score >= 50) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
-  };
+  // 显示选择页面
+  if (!currentItem) {
+    return (
+      <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+        {/* 顶部导航 */}
+        <div className="flex items-center gap-4 mb-6">
+          <Link href="/">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              口语练习
+            </h1>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              选择年级和练习类型
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 text-yellow-500" />
+            <span className="font-bold text-lg">{stars}</span>
+          </div>
+        </div>
+
+        {/* 年级选择 */}
+        <Card className="mb-6 hover:shadow-xl transition-shadow">
+          <CardContent className="p-6">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-blue-500" />
+              选择年级
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[3, 4, 5, 6].map((grade) => (
+                <Button
+                  key={grade}
+                  variant={selectedGrade === grade ? "default" : "outline"}
+                  size="lg"
+                  onClick={() => {
+                    setSelectedGrade(grade);
+                    setSelectedCategory(null);
+                  }}
+                  className={`text-lg font-semibold ${selectedGrade === grade ? 'bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}
+                >
+                  {grade}年级
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 分类选择 */}
+        {selectedGrade && (
+          <Card className="mb-6 hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Target className="w-6 h-6 text-purple-500" />
+                选择练习类型
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {categories.map((category) => {
+                  const itemCount = getSpeakingByGrade(selectedGrade).filter(item => item.category === category.id).length;
+                  if (itemCount === 0) return null;
+                  return (
+                    <Card
+                      key={category.id}
+                      className={`cursor-pointer hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${
+                        selectedCategory === category.id
+                          ? 'border-blue-500 dark:border-blue-700'
+                          : 'border-transparent'
+                      }`}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <div className="text-5xl mb-3">{category.icon}</div>
+                        <h4 className="text-lg font-bold mb-2">{category.name}</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                          {category.description}
+                        </p>
+                        <Badge variant="outline" className="border-slate-300 dark:border-slate-700">
+                          {itemCount} 个练习
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* 开始按钮 */}
+        {selectedGrade && selectedCategory && (
+          <Card className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700">
+            <CardContent className="p-6 text-center">
+              <div className="mb-4 text-lg">
+                共 <span className="font-bold text-green-600">
+                  {getSpeakingByGrade(selectedGrade).filter(item => item.category === selectedCategory).length}
+                </span> 个练习
+              </div>
+              <Button
+                size="lg"
+                onClick={() => {
+                  setCurrentIndex(0);
+                  setScore(0);
+                  setTotalScore(0);
+                  setStars(0);
+                  setRecordedText('');
+                  setFeedback('');
+                }}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-lg px-12"
+              >
+                <Mic className="w-5 h-5 mr-2" />
+                开始练习
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
       {/* 顶部导航 */}
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
+        <Button variant="ghost" size="icon" onClick={() => {
+          setSelectedCategory(null);
+          setSelectedGrade(null);
+          setCurrentIndex(0);
+        }}>
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
         <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             口语练习
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            跟读练习，提升发音
+            {currentIndex + 1} / {filteredItems.length}
           </p>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-slate-600 dark:text-slate-400">总得分</div>
-          <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">{totalScore}</div>
+        <div className="flex items-center gap-2">
+          <Star className="w-5 h-5 text-yellow-500" />
+          <span className="font-bold text-lg">{stars}</span>
         </div>
       </div>
 
@@ -284,170 +437,122 @@ export default function SpeakingPage() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-slate-600 dark:text-slate-400">
-            进度: {currentIndex + 1}/{practiceItems.length}
+            进度
           </span>
-          <span className="text-sm font-medium text-pink-600 dark:text-pink-400">
+          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
             {Math.round(progress)}%
           </span>
         </div>
         <Progress value={progress} className="h-2" />
       </div>
 
-      {/* 当前练习内容 */}
-      <Card className="mb-6 hover:shadow-2xl transition-shadow">
+      {/* 练习卡片 */}
+      <Card className="mb-6 hover:shadow-xl transition-shadow">
         <CardContent className="p-8">
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Badge className={getDifficultyColor(currentItem.difficulty)}>
-                {currentItem.difficulty}
-              </Badge>
-              <Badge variant="outline">{currentItem.category}</Badge>
-            </div>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <Badge className={getGradeColor(currentItem.grade)}>
+              {currentItem.grade}年级
+            </Badge>
+            <Badge className={getDifficultyColor(currentItem.difficulty)}>
+              {currentItem.difficulty}
+            </Badge>
+            <Badge variant="outline">
+              {currentItem.category}
+            </Badge>
+          </div>
 
-            <div className="mb-4">
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-3">
-                {currentItem.text}
-              </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-400">
-                {currentItem.translation}
-              </p>
-            </div>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              {currentItem.text}
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">
+              {currentItem.translation}
+            </p>
+          </div>
 
+          <div className="flex justify-center mb-8">
             <Button
               size="lg"
               onClick={() => speakText(currentItem.text)}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
             >
               <Volume2 className="w-5 h-5 mr-2" />
               听示范
             </Button>
           </div>
 
-          {/* 录音控制 */}
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {!isRecording && !isProcessing && (
-                <Button
-                  size="lg"
-                  onClick={startRecording}
-                  className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 min-w-[200px]"
-                >
-                  <Mic className="w-5 h-5 mr-2" />
-                  开始录音
-                </Button>
-              )}
-
-              {isRecording && (
-                <Button
-                  size="lg"
-                  onClick={stopRecording}
-                  variant="destructive"
-                  className="min-w-[200px]"
-                >
+          <div className="flex flex-col items-center mb-8">
+            <Button
+              size="lg"
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isProcessing}
+              className={`w-full max-w-md ${
+                isRecording
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
+              }`}
+            >
+              {isRecording ? (
+                <>
                   <MicOff className="w-5 h-5 mr-2" />
                   停止录音
-                </Button>
-              )}
-
-              {isProcessing && (
-                <Button size="lg" disabled className="min-w-[200px]">
-                  正在处理...
-                </Button>
-              )}
-
-              {recordedText && !isProcessing && (
+                </>
+              ) : (
                 <>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={handleReset}
-                    className="min-w-[200px]"
-                  >
-                    <RotateCcw className="w-5 h-5 mr-2" />
-                    重新录音
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={handleNext}
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 min-w-[200px]"
-                  >
-                    {currentIndex < practiceItems.length - 1 ? '下一题' : '完成练习'}
-                  </Button>
+                  <Mic className="w-5 h-5 mr-2" />
+                  开始录音
                 </>
               )}
-            </div>
-
-            {/* 录音状态指示 */}
+            </Button>
             {isRecording && (
-              <div className="flex items-center justify-center gap-3 text-pink-600 dark:text-pink-400">
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-16 h-16 bg-pink-500/30 rounded-full animate-ping" />
-                  <div className="relative w-16 h-16 bg-pink-500 rounded-full flex items-center justify-center">
-                    <Mic className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <span className="text-lg font-semibold">正在录音...</span>
-              </div>
+              <p className="mt-4 text-red-600 dark:text-red-400 animate-pulse">
+                正在录音...
+              </p>
             )}
+            {isProcessing && (
+              <p className="mt-4 text-blue-600 dark:text-blue-400">
+                正在处理...
+              </p>
+            )}
+          </div>
 
-            {/* 识别结果 */}
-            {recordedText && (
-              <Card className="bg-slate-50 dark:bg-slate-900 border-2">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">识别结果</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">标准答案</p>
-                      <p className="text-lg font-medium">{currentItem.text}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">你的发音</p>
-                      <p className="text-lg font-medium">{recordedText}</p>
-                    </div>
-                  </div>
-
-                  {/* 得分 */}
+          {recordedText && (
+            <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 mb-6">
+              <CardContent className="p-6 text-center">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">你说的是：</p>
+                <p className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                  {recordedText}
+                </p>
+                {score > 0 && (
                   <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">得分</span>
-                      <span className={`text-3xl font-bold ${getScoreColor(score)}`}>
-                        {score}%
-                      </span>
-                    </div>
-                    <Progress value={score} className="h-3" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">得分：</p>
+                    <p className={`text-4xl font-bold ${
+                      score >= 90 ? 'text-green-600' : score >= 70 ? 'text-blue-600' : score >= 50 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {score} 分
+                    </p>
                   </div>
+                )}
+                {feedback && (
+                  <p className="text-lg text-slate-800 dark:text-slate-200">
+                    {feedback}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-                  {/* 反馈 */}
-                  {feedback && (
-                    <div className="text-center py-4">
-                      <p className="text-xl font-semibold text-slate-900 dark:text-white">
-                        {feedback}
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 提示卡片 */}
-      <Card className="bg-gradient-to-r from-blue-50 to-pink-50 dark:from-blue-900/20 dark:to-pink-900/20 border-blue-200 dark:border-blue-800">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="text-4xl">🎤</div>
-            <div>
-              <h3 className="font-semibold mb-2">练习小贴士</h3>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                <li>• 点击"听示范"先听标准发音</li>
-                <li>• 录音时保持清晰的发音</li>
-                <li>• 每天练习10-15分钟效果最佳</li>
-                <li>• 得分越高说明发音越标准</li>
-              </ul>
+          {feedback && (
+            <div className="flex justify-center">
+              <Button
+                size="lg"
+                onClick={handleNext}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                {currentIndex < filteredItems.length - 1 ? '下一个' : '完成'}
+              </Button>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>
