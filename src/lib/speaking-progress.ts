@@ -47,9 +47,6 @@ export const clearSpeakingProgress = () => {
     console.error('Failed to clear speaking progress:', error);
   }
 };
-    console.error('Failed to clear speaking progress:', error);
-  }
-};
 
 // 检查是否有有效的进度
 export const hasValidSpeakingProgress = (): boolean => {
